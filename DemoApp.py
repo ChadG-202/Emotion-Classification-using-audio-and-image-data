@@ -199,16 +199,9 @@ def emotion_classifier():
 
     return audio_predictions[0], image_predictions[0]
 
-# Use both results to give final prediction
-def combined_emotion_predicition():
-    audio, image = emotion_classifier()
-    print("Audio: "+str(audio))
-    print("Image: "+str(image))
+# Determine emotion
+def emotion(happy, neutral, sad):
     result = ""
-    happy = float(abs(image[0])) + float(abs(audio[0]))
-    neutral = float(abs(image[1])) + float(abs(audio[1]))
-    sad = float(abs(image[2])) + float(abs(audio[2]))
-
     if happy > neutral and happy > sad:
         result += "Happy"
     elif neutral > happy and neutral > sad:
@@ -223,8 +216,24 @@ def combined_emotion_predicition():
         result += "Neutral or Sad"
     else:
         result += "Happy or Neutral or Sad"
+    return result
 
-    return "Prediction: "+result+ " : "+str(happy)+", "+str(neutral)+", "+str(sad)
+# Use both results to give final prediction
+def combined_emotion_predicition():
+    audio, image = emotion_classifier()
+    print("Audio: "+emotion(audio[0], audio[1], audio[2])+" "+str(int(max(audio)*100))+"%")
+    print("Image: "+emotion(image[0], image[1], image[2])+" "+str(int(max(image)*100))+"%")
+
+    percentages = []
+    happy = float(abs(image[0])) + float(abs(audio[0]))
+    percentages.append(happy)
+    neutral = float(abs(image[1])) + float(abs(audio[1]))
+    percentages.append(neutral)
+    sad = float(abs(image[2])) + float(abs(audio[2]))
+    percentages.append(sad)
+
+    return "Prediction: "+emotion(happy, neutral, sad)+ " "+str(int(max(percentages)*50))+"%"
+    
 
 input("This application uses CNN to predict your emotion (enter)")
 input("Choose an emotion (Happy/Neutral/Sad) then take a picture (enter)")
