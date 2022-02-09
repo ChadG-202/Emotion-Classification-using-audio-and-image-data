@@ -3,8 +3,8 @@ import dlib
 import os
 
 detector = dlib.get_frontal_face_detector()
-new_path = 'EmotionDataset/Image/Sad/'
-old_path = 'RawEmotionData/Sad'
+new_path = 'EmotionDataset/Train/Image/Sad/'
+old_path = 'AugEmotionData/Image/Sad'
 
 def save(img,name, bbox, width=180,height=227):
     x, y, w, h = bbox
