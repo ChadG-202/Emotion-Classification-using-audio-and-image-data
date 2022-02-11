@@ -11,10 +11,8 @@ class App:
         self.video_source = video_source
         self.ok=False
         self.stage = 0
-        self.happy_photos_taken = 0
-        self.neutral_photos_taken = 0
-        self.sad_photos_taken = 0
-        self.window.title(window_title+str(self.happy_photos_taken+1)+'/10')
+        self.photos_taken = 0
+        self.window.title(window_title+str(self.photos_taken)+'/10')
 
         # open video source (by default this will try to open the computer webcam)
         self.vid = VideoCapture(self.video_source)
@@ -42,30 +40,30 @@ class App:
         ret,frame=self.vid.get_frame()
 
         if ret:
-            if self.happy_photos_taken < 10:
+            if self.photos_taken < 10:
                 cv2.imwrite("TkinterData/Image/Happy/"+time.strftime("%d-%m-%Y-%H-%M-%S")+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
-                self.happy_photos_taken +=1
-            elif self.neutral_photos_taken < 10:
-                self.stage =1
+                self.photos_taken +=1
+                if self.photos_taken == 10:
+                    self.stage =1
+            elif self.photos_taken >= 10 and self.photos_taken < 20:
                 cv2.imwrite("TkinterData/Image/Neutral/"+time.strftime("%d-%m-%Y-%H-%M-%S")+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
-                self.neutral_photos_taken +=1
-            elif self.neutral_photos_taken < 10:
-                self.stage = 2
+                self.photos_taken +=1
+                if self.photos_taken == 20:
+                    self.stage =2
+            elif self.photos_taken >= 20 and self.photos_taken < 30:
                 cv2.imwrite("TkinterData/Image/Sad/"+time.strftime("%d-%m-%Y-%H-%M-%S")+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
-                self.sad_photos_taken +=1
+                self.photos_taken +=1
+                if self.photos_taken == 30:
+                    self.stage =3
             else:
-                self.stage = 3
-                if self.vid.isOpened():
-                    self.vid.release()
-                    self.out.release()
-                    cv2.destroyAllWindows()
+                pass
         
         if self.stage == 0:
-            self.window.title('Take Happy Photo'+str(self.happy_photos_taken)+'/10')
+            self.window.title('Take Happy Photo'+str(self.photos_taken)+'/10')
         elif self.stage == 1:
-            self.window.title('Take Neutral Photo'+str(self.neutral_photos_taken)+'/10')
+            self.window.title('Take Neutral Photo'+str(self.photos_taken-10)+'/10')
         elif self.stage == 2:
-            self.window.title('Take Sad Photo'+str(self.sad_photos_taken)+'/10')
+            self.window.title('Take Sad Photo'+str(self.photos_taken-20)+'/10')
         else:
             self.window.title('Next part')
 
