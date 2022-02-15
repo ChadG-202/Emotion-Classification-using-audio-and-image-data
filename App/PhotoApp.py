@@ -2,6 +2,7 @@ import tkinter as tk
 import cv2
 import PIL.Image, PIL.ImageTk
 import argparse
+from AudioApp import RecorderApp
 
 class ImageApp:
     def __init__(self, window, window_title, video_source=0):
@@ -52,7 +53,7 @@ class ImageApp:
                 cv2.imwrite("App/AppData/Image/Sad/"+str(self.photos_taken-20)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
                 self.photos_taken +=1
             else:
-                quit()
+                RecorderApp(tk.Tk())
         
         if self.stage == 0:
             self.window.title('Take Happy Photo'+str(self.photos_taken)+'/10')
