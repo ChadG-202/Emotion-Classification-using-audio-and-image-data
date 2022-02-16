@@ -1,5 +1,4 @@
 from tkinter import *
-from mysqlx import Statement
 import sounddevice as sound
 from scipy.io.wavfile import write
 import time
@@ -49,11 +48,10 @@ class RecorderApp:
 
         sound.wait()
         write("App/AppData/Audio/"+type+"/"+path+".wav",freq,recording)
+        write("App/PreprocessedData/Audio/"+type+"/"+path+".wav",freq,recording)
 
         self.pos +=1
         self.sentence()
-        if self.pos == 30:
-            quit()
 
     def Record(self):
         self.Recording(self.emotion, str(self.pos))
@@ -72,5 +70,8 @@ class RecorderApp:
             tempPos = self.pos - 20
             self.emotion = "Sad"
 
-        ask = "Say the phrase: "+questions[tempPos]+" in a "+self.emotion+" voice."
-        Label(text=f"{ask}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=20, y=350)
+        if self.pos < 30:
+            ask = "Say the phrase: "+questions[tempPos]+" in a "+self.emotion+" voice."
+            Label(text=f"{ask}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=20, y=350)
+        else:
+            self.root.destroy()

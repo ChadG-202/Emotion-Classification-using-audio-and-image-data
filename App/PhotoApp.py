@@ -2,7 +2,6 @@ import tkinter as tk
 import cv2
 import PIL.Image, PIL.ImageTk
 import argparse
-from AudioApp import RecorderApp
 
 class ImageApp:
     def __init__(self, window, window_title, video_source=0):
@@ -24,10 +23,6 @@ class ImageApp:
         self.btn_snapshot=tk.Button(window, text="Snapshot", command=self.snapshot)
         self.btn_snapshot.pack(side=tk.LEFT)
 
-        # quit button
-        self.btn_quit=tk.Button(window, text='QUIT', command=quit)
-        self.btn_quit.pack(side=tk.LEFT)
-
         # After it is called once, the update method will be automatically called every delay milliseconds
         self.delay=10
         self.update()
@@ -41,36 +36,34 @@ class ImageApp:
         if ret:
             if self.photos_taken < 10:
                 cv2.imwrite("App/AppData/Image/Happy/"+str(self.photos_taken)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
+                cv2.imwrite("App/AugImageData/Image/Happy/"+str(self.photos_taken)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
                 self.photos_taken +=1
                 if self.photos_taken == 10:
                     self.stage =1
             elif self.photos_taken >= 10 and self.photos_taken < 20:
                 cv2.imwrite("App/AppData/Image/Neutral/"+str(self.photos_taken-10)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
+                cv2.imwrite("App/AugImageData/Image/Neutral/"+str(self.photos_taken-10)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
                 self.photos_taken +=1
                 if self.photos_taken == 20:
                     self.stage =2
             elif self.photos_taken >= 20 and self.photos_taken < 30:
                 cv2.imwrite("App/AppData/Image/Sad/"+str(self.photos_taken-20)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
+                cv2.imwrite("App/AugImageData/Image/Sad/"+str(self.photos_taken-20)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
                 self.photos_taken +=1
-            else:
-                RecorderApp(tk.Tk())
-        
+                # Finished
+                if self.photos_taken == 30:
+                    self.stage =3
+                    self.window.destroy()
+
+
         if self.stage == 0:
             self.window.title('Take Happy Photo'+str(self.photos_taken)+'/10')
         elif self.stage == 1:
             self.window.title('Take Neutral Photo'+str(self.photos_taken-10)+'/10')
         elif self.stage == 2:
             self.window.title('Take Sad Photo'+str(self.photos_taken-20)+'/10')
-
-    def open_camera(self):
-        self.ok = True
-        self.timer.start()
-        print("camera opened => Recording")
-
-    def close_camera(self):
-        self.ok = False
-        self.timer.stop()
-        print("camera closed => Not Recording")
+        elif self.stage == 3:
+            self.window.title('Done press x to move on!')
        
     def update(self):
 
@@ -141,7 +134,6 @@ class VideoCapture:
     def __del__(self):
         if self.vid.isOpened():
             self.vid.release()
-            self.out.release()
             cv2.destroyAllWindows()
 
 class CommandLineParser:
