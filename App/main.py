@@ -195,7 +195,7 @@ def process_data(DATASET_AUDIO_TRAIN, DATASET_IMAGE_TRAIN, JSON_TRAIN):
 
 def train_models():
     # Load data
-    DATA_PATH = "App/data.json"
+    DATA_PATH = "App/json_files/data.json"
     IMG_SIZE = 48
 
     def load_audio_data(data_path):
@@ -318,14 +318,14 @@ def test():
     crop_faces("App/PreprocessedTest/", "App/TestData/Image")
     
     # Process data
-    process_data("App/PreprocessedTest/Audio", "App/PreprocessedTest/Image", "App/sample.json")
+    process_data("App/PreprocessedTest/Audio", "App/PreprocessedTest/Image", "App/json_files/sample.json")
 
     # CLassifier models
     image_model = tf.keras.models.load_model('App/imageClassifier.model')
     audio_model = tf.keras.models.load_model('App/audioClassifier.model')
 
     # Retrive data
-    audio, image = load_data("App/sample.json")
+    audio, image = load_data("App/json_files/sample.json")
 
     # Fit audio data
     audio = audio[..., np.newaxis]
@@ -344,7 +344,7 @@ if __name__ == "__main__":
     # ImageApp(tk.Tk(),'Take Happy Photo')
     # RecorderApp(tk.Tk())
     # augment_data()
-    # process_data("App/PreprocessedData/Audio", "App/PreprocessedData/Image", "App/data.json")
+    # process_data("App/PreprocessedData/Audio", "App/PreprocessedData/Image", "App/json_files/data.json")
     # a_history, i_history = train_models()
     audio_ac, image_ac, com_ac = test()
     print(audio_ac)

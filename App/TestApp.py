@@ -145,11 +145,11 @@ class TestRecorderApp:
         self.root.configure(background="#4a4a4a")
 
         #Icon
-        self.image_icon=PhotoImage(file="App/rec-button.png")
+        self.image_icon=PhotoImage(file="App/AppImages/rec-button.png")
         self.root.iconphoto(False, self.image_icon)
 
         #Logo
-        self.photo=PhotoImage(file="App/rec-button.png")
+        self.photo=PhotoImage(file="App/AppImages/rec-button.png")
         self.myimage=Label(image=self.photo,background="#4a4a4a")
         self.myimage.pack(pady=30)
 
