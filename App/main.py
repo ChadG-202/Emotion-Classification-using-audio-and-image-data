@@ -1,5 +1,6 @@
-from PhotoApp import ImageApp
-from AudioApp import RecorderApp
+from unittest import result
+from DataApp import RecorderApp, ImageApp
+from TestApp import TestImageApp, TestRecorderApp
 import tkinter as tk
 from audiomentations import Compose, AddGaussianNoise, PitchShift, TimeStretch, Shift
 import librosa
@@ -10,8 +11,13 @@ import dlib
 import cv2
 import math
 import json
+import numpy as np
+from sklearn.model_selection import train_test_split
+import tensorflow.keras as keras
+import tensorflow as tf
+import json
 
-def crop_faces():
+def crop_faces(from_p, to_p):
     detector = dlib.get_frontal_face_detector()
 
     def save(img,name, bbox, i, width=48,height=48):
@@ -41,7 +47,7 @@ def crop_faces():
                 if not faces:
                     print("No face found: "+os.path.join(new_path, semantic_label)+"/"+ file)
 
-    faces('App/PreprocessedData/', 'App/AugImageData/Image')
+    faces(from_p, to_p)
 
 def augment_data():
     def augment_audio_data():
@@ -96,14 +102,9 @@ def augment_data():
                         break
     augment_image_data()
     augment_audio_data()
-    crop_faces()
+    crop_faces('App/PreprocessedData/', 'App/AugImageData/Image')
 
-def process_data():
-    # Paths
-    DATASET_AUDIO_TRAIN = "App/PreprocessedData/Audio"
-    DATASET_IMAGE_TRAIN = "App/PreprocessedData/Image"
-    JSON_TRAIN = "App/data.json"
-
+def process_data(DATASET_AUDIO_TRAIN, DATASET_IMAGE_TRAIN, JSON_TRAIN):
     # Audio Var
     SAMPLE_RATE = 22050
     DURATION = 4
@@ -192,10 +193,163 @@ def process_data():
 
     save_data(DATASET_AUDIO_TRAIN, DATASET_IMAGE_TRAIN, JSON_TRAIN, num_segments=1)
 
+def train_models():
+    # Load data
+    DATA_PATH = "App/data.json"
+    IMG_SIZE = 48
+
+    def load_audio_data(data_path):
+        with open(data_path, "r") as fp:
+            data = json.load(fp)
+            
+        X = np.array(data["mfcc"])
+        y = np.array(data["labels"])
+        return X, y
+
+    def load_image_data(data_path):
+        with open(data_path, "r") as fp:
+            data = json.load(fp)
+            
+        X = np.array(data["image"]).reshape(-1, IMG_SIZE, IMG_SIZE, 1)
+        y = np.array(data["labels"])
+        return X, y
+
+    # Split data
+    def prepare_datasets(validation_size, X, y, A_type):
+        X_train, X_validation, y_train, y_validation = train_test_split(X, y, test_size=validation_size)
+
+        if(A_type):
+            X_train = X_train[..., np.newaxis]
+            X_validation = X_validation[..., np.newaxis]
+        
+        return X_train, X_validation, y_train, y_validation
+    
+    # CNN model
+    def build_model(input_shape):
+        model = keras.Sequential()
+        
+        model.add(keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=input_shape))
+        model.add(keras.layers.BatchNormalization())
+        model.add(keras.layers.Conv2D(32, (3, 3), activation='relu'))
+        model.add(keras.layers.BatchNormalization())
+        model.add(keras.layers.MaxPooling2D((3, 3), strides=(2, 2), padding='same'))                                
+        model.add(keras.layers.Dropout(0.25))  
+        
+        model.add(keras.layers.BatchNormalization())
+        model.add(keras.layers.Conv2D(64, (3, 3), activation='relu'))
+        model.add(keras.layers.BatchNormalization())
+        model.add(keras.layers.Conv2D(64, (3, 3), activation='relu'))   
+        model.add(keras.layers.MaxPooling2D((3, 3), strides=(2, 2), padding='same'))                                
+        model.add(keras.layers.Dropout(0.25))
+        
+        model.add(keras.layers.Flatten())
+            
+        model.add(keras.layers.Dense(256, activation='relu'))
+        model.add(keras.layers.Dropout(0.5))
+        model.add(keras.layers.Dense(480, activation='relu'))
+        model.add(keras.layers.Dropout(0.05))
+        
+        model.add(keras.layers.Dense(3, activation='softmax'))
+        
+        return model
+
+    # Train/Test Split data
+    validation_size = 0.2
+
+    X_audio, y_audio = load_audio_data(DATA_PATH)
+    X_image, y_image = load_image_data(DATA_PATH)
+
+    X_audio_train, X_audio_validation, y_audio_train, y_audio_validation = prepare_datasets(validation_size, X_audio, y_audio, True)
+
+    X_image_train, X_image_validation, y_image_train, y_image_validation = prepare_datasets(validation_size, X_image, y_image, False)
+
+    # Audio train
+    audio_input_shape = (X_audio_train.shape[1], X_audio_train.shape[2], X_audio_train.shape[3])
+    audio_model = build_model(audio_input_shape)
+
+    audio_optimizer = keras.optimizers.Adam(learning_rate=0.0001)
+
+    audio_model.compile(optimizer=audio_optimizer,
+                loss="sparse_categorical_crossentropy",
+                metrics=["accuracy"])
+
+    audio_model.summary()
+
+    audio_history = audio_model.fit(X_audio_train, y_audio_train, batch_size=2, epochs=40, validation_data=(X_audio_validation, y_audio_validation))
+
+    # Image train
+    X_image_train = X_image_train.astype("float32")/255.0
+    X_image_validation = X_image_validation.astype("float32")/255.0
+
+    image_input_shape = (X_image_train.shape[1:])
+    image_model = build_model(image_input_shape)
+
+    image_optimizer = keras.optimizers.Adam(learning_rate=0.0001)
+
+    image_model.compile(optimizer=image_optimizer,
+                loss="sparse_categorical_crossentropy",
+                metrics=["accuracy"])
+
+    image_model.summary()
+
+    image_history = image_model.fit(X_image_train, y_image_train, batch_size=2, epochs=40, validation_data=(X_image_validation, y_image_validation))
+
+    # Save models
+    audio_model.save("App/audioClassifier.model")
+    image_model.save("App/imageClassifier.model")
+
+    return audio_history, image_history
+
+# Load Json data
+def load_data(data_path):
+    with open(data_path, "r") as fp:
+        data = json.load(fp)
+        
+    X_a = np.array(data["mfcc"])
+    X_i = np.array(data["image"])
+    return X_a, X_i
+
+def both_pred(Audio, Image):
+    return Audio, Image, 1
+
+def test():
+    TestImageApp(tk.Tk(),'Take Test Photo')
+    TestRecorderApp(tk.Tk())
+    crop_faces("App/PreprocessedTest/", "App/TestData/Image")
+    
+    # Process data
+    process_data("App/PreprocessedTest/Audio", "App/PreprocessedTest/Image", "App/sample.json")
+
+    # CLassifier models
+    image_model = tf.keras.models.load_model('App/imageClassifier.model')
+    audio_model = tf.keras.models.load_model('App/audioClassifier.model')
+
+    # Retrive data
+    audio, image = load_data("App/sample.json")
+
+    # Fit audio data
+    audio = audio[..., np.newaxis]
+    # Predict audio
+    audio_predictions = audio_model.predict(audio)
+
+    # Fit image data
+    image = np.array(image).reshape(-1, 48, 48, 1)
+    image = image.astype("float32")/255.0
+    # Predict image
+    image_predictions = image_model.predict(image)
+
+    return both_pred(audio_predictions[0], image_predictions[0])
 
 if __name__ == "__main__":
-    ImageApp(tk.Tk(),'Take Happy Photo')
-    RecorderApp(tk.Tk())
-    augment_data()
-    process_data()
+    # ImageApp(tk.Tk(),'Take Happy Photo')
+    # RecorderApp(tk.Tk())
+    # augment_data()
+    # process_data("App/PreprocessedData/Audio", "App/PreprocessedData/Image", "App/data.json")
+    # a_history, i_history = train_models()
+    audio_ac, image_ac, com_ac = test()
+    print(audio_ac)
+    print(image_ac)
+    print(com_ac)
+    # results(a_history, i_history, audio_ac, image_ac, com_ac)
 
+# need to use the demo app process code find a way to incorpirate it into other one
