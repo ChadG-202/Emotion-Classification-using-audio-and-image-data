@@ -104,7 +104,7 @@ def augment_data():
     augment_audio_data()
     crop_faces('App/PreprocessedData/', 'App/AugImageData/Image')
 
-def process_data(DATASET_AUDIO_TRAIN, DATASET_IMAGE_TRAIN, JSON_TRAIN):
+def process_data(DATASET_AUDIO_TRAIN, DATASET_IMAGE_TRAIN, JSON_TRAIN, test):
     # Audio Var
     SAMPLE_RATE = 22050
     DURATION = 4
@@ -189,9 +189,48 @@ def process_data(DATASET_AUDIO_TRAIN, DATASET_IMAGE_TRAIN, JSON_TRAIN):
         # dump stored data into json file
         with open(json_path, "w") as fp:
             json.dump(data, fp, indent=4)
+    
+    # Process the test data
+    def processTest(audio_path, image_path, json_path, n_mfcc=13, n_fft=2048, hop_length=512, num_segments=1):
+        data = {
+            "mfcc": [],
+            "image": []
+        }
         
+        num_samples_per_segment = int(SAMPLES_PER_TRACK / num_segments)
+        expected_num_mfcc_vectors_per_segment = math.ceil(num_samples_per_segment / hop_length)
 
-    save_data(DATASET_AUDIO_TRAIN, DATASET_IMAGE_TRAIN, JSON_TRAIN, num_segments=1)
+        try:
+            signal, sr = librosa.load(audio_path, sr=SAMPLE_RATE)
+        except Exception as e:                                                    
+            print('Audio failed to process: ' + e)
+        
+        for s in range(num_segments):
+            start_sample = num_samples_per_segment * s
+            finish_sample = start_sample + num_samples_per_segment
+                
+            mfcc = librosa.feature.mfcc(signal[start_sample:finish_sample],
+                                        sr=sr,
+                                        n_fft=n_fft,
+                                        n_mfcc=n_mfcc,
+                                        hop_length=hop_length)
+            
+            mfcc = mfcc.T
+            
+            if len(mfcc) == expected_num_mfcc_vectors_per_segment:
+                data["mfcc"].append(mfcc.tolist())
+        
+        img_array = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE) 
+        sized_array = cv2.resize(img_array, (IMG_SIZE, IMG_SIZE))
+        data["image"].append(sized_array.tolist())
+
+        with open(json_path, "w") as fp:
+            json.dump(data, fp, indent=4)    
+
+    if test:
+        processTest(DATASET_AUDIO_TRAIN, DATASET_IMAGE_TRAIN, JSON_TRAIN, num_segments=1)
+    else:
+        save_data(DATASET_AUDIO_TRAIN, DATASET_IMAGE_TRAIN, JSON_TRAIN, num_segments=1)
 
 def train_models():
     # Load data
@@ -309,8 +348,15 @@ def load_data(data_path):
     X_i = np.array(data["image"])
     return X_a, X_i
 
-def both_pred(Audio, Image):
-    return Audio, Image, 1
+def both_pred(audio, image):
+    percentages = []
+    happy = float(abs(image[0])) + float(abs(audio[0]))
+    percentages.append(happy)
+    neutral = float(abs(image[1])) + float(abs(audio[1]))
+    percentages.append(neutral)
+    sad = float(abs(image[2])) + float(abs(audio[2]))
+    percentages.append(sad)
+    return audio, image, percentages
 
 def test():
     TestImageApp(tk.Tk(),'Take Test Photo')
@@ -318,7 +364,7 @@ def test():
     crop_faces("App/PreprocessedTest/", "App/TestData/Image")
     
     # Process data
-    process_data("App/PreprocessedTest/Audio", "App/PreprocessedTest/Image", "App/json_files/sample.json")
+    process_data("App/PreprocessedTest/Audio/test.wav", "App/PreprocessedTest/Image/test.jpg", "App/json_files/sample.json", True)
 
     # CLassifier models
     image_model = tf.keras.models.load_model('App/imageClassifier.model')
@@ -344,7 +390,7 @@ if __name__ == "__main__":
     # ImageApp(tk.Tk(),'Take Happy Photo')
     # RecorderApp(tk.Tk())
     # augment_data()
-    # process_data("App/PreprocessedData/Audio", "App/PreprocessedData/Image", "App/json_files/data.json")
+    # process_data("App/PreprocessedData/Audio", "App/PreprocessedData/Image", "App/json_files/data.json", False)
     # a_history, i_history = train_models()
     audio_ac, image_ac, com_ac = test()
     print(audio_ac)
