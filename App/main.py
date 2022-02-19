@@ -387,15 +387,13 @@ def test():
     return both_pred(audio_predictions[0], image_predictions[0])
 
 if __name__ == "__main__":
-    # ImageApp(tk.Tk(),'Take Happy Photo')
-    # RecorderApp(tk.Tk())
-    # augment_data()
-    # process_data("App/PreprocessedData/Audio", "App/PreprocessedData/Image", "App/json_files/data.json", False)
-    # a_history, i_history = train_models()
+    ImageApp(tk.Tk(),'Take Happy Photo')
+    RecorderApp(tk.Tk())
+    augment_data()
+    process_data("App/PreprocessedData/Audio", "App/PreprocessedData/Image", "App/json_files/data.json", False)
+    a_history, i_history = train_models()
     audio_ac, image_ac, com_ac = test()
     print(audio_ac)
     print(image_ac)
     print(com_ac)
     # results(a_history, i_history, audio_ac, image_ac, com_ac)
-
-# need to use the demo app process code find a way to incorpirate it into other one
