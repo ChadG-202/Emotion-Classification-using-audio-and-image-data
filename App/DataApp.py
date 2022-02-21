@@ -113,19 +113,16 @@ class ImageApp:
         if ret:
             if self.photos_taken < 10:
                 cv2.imwrite("App/AppData/Image/Happy/"+str(self.photos_taken)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
-                cv2.imwrite("App/AugImageData/Image/Happy/"+str(self.photos_taken)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
                 self.photos_taken +=1
                 if self.photos_taken == 10:
                     self.stage =1
             elif self.photos_taken >= 10 and self.photos_taken < 20:
                 cv2.imwrite("App/AppData/Image/Neutral/"+str(self.photos_taken-10)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
-                cv2.imwrite("App/AugImageData/Image/Neutral/"+str(self.photos_taken-10)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
                 self.photos_taken +=1
                 if self.photos_taken == 20:
                     self.stage =2
             elif self.photos_taken >= 20 and self.photos_taken < 30:
                 cv2.imwrite("App/AppData/Image/Sad/"+str(self.photos_taken-20)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
-                cv2.imwrite("App/AugImageData/Image/Sad/"+str(self.photos_taken-20)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
                 self.photos_taken +=1
                 # Finished
                 if self.photos_taken == 30:

@@ -17,7 +17,7 @@ import tensorflow.keras as keras
 import tensorflow as tf
 import json
 
-def crop_faces(from_p, to_p):
+def crop_faces(from_p, to_p, clear=True):
     detector = dlib.get_frontal_face_detector()
 
     def save(img,name, bbox, i, width=48,height=48):
@@ -29,9 +29,14 @@ def crop_faces(from_p, to_p):
         except Exception as e:
             print(str(e) +"\n couldnt resize: "+ i)
 
-    def faces(new_path, old_path):
-        for root, dirs, files in os.walk(old_path):
-            for i, file in enumerate(files):
+    def faces(new_path, old_path, clear):
+        if clear:
+            for i, (dirpath, dirnames, filenames) in enumerate(os.walk(new_path+"Image/")):
+                for f in filenames:
+                    os.remove(os.path.join(dirpath, f))
+
+        for i, (root, dirs, files) in enumerate(os.walk(old_path)):
+            for file in files:
                 frame =cv2.imread(os.path.join(root, file))
                 gray =cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
                 faces = detector(gray)
@@ -47,7 +52,7 @@ def crop_faces(from_p, to_p):
                 if not faces:
                     print("No face found: "+os.path.join(new_path, semantic_label)+"/"+ file)
 
-    faces(from_p, to_p)
+    faces(from_p, to_p, clear)
 
 def augment_data():
     def augment_audio_data():
@@ -76,12 +81,16 @@ def augment_data():
         datagen = ImageDataGenerator(rescale=1./255,
             rotation_range=15,
             zoom_range=0.1,
-            width_shift_range=0.2,
-            height_shift_range=0.2,
+            width_shift_range=0.1,
+            height_shift_range=0.1,
             shear_range=0.1,
             horizontal_flip=True,
             fill_mode="nearest"
         )
+
+        for i, (dirpath, dirnames, filenames) in enumerate(os.walk(AUG_IMAGE_PATH+"Image/")):
+            for f in filenames:
+                os.remove(os.path.join(dirpath, f))
         
         for i, (dirpath, dirnames, filenames) in enumerate(os.walk(IMAGE_PATH)):
             for f in filenames:
@@ -95,14 +104,13 @@ def augment_data():
                     
                 f_s = f.split(".")
                 
-                count = 1
-                for batch in datagen.flow(X, batch_size=5,save_to_dir=os.path.join(AUG_IMAGE_PATH, semantic_label), save_prefix=f_s[0], save_format=f_s[1]):
-                    count += 1
-                    if count > 10:
-                        break
+                for x, val in zip(datagen.flow(X, batch_size=5, save_to_dir=os.path.join(AUG_IMAGE_PATH, semantic_label), save_prefix=f_s[0], save_format=f_s[1]),range(9)):     
+                    pass
+
     augment_image_data()
     augment_audio_data()
     crop_faces('App/PreprocessedData/', 'App/AugImageData/Image')
+    crop_faces('App/PreprocessedData/', 'App/AppData/Image', False)
 
 def process_data(DATASET_AUDIO_TRAIN, DATASET_IMAGE_TRAIN, JSON_TRAIN, test):
     # Audio Var
