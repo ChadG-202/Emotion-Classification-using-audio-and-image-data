@@ -404,4 +404,6 @@ if __name__ == "__main__":
     print(audio_ac)
     print(image_ac)
     print(com_ac)
-    # results(a_history, i_history, audio_ac, image_ac, com_ac)
+    # ResultApp(a_history, i_history, audio_ac, image_ac, com_ac)
+
+# Have a message tkinter screen that pops up with messages to explain whats going on, as well as finally showing the results

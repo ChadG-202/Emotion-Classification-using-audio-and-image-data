@@ -192,7 +192,7 @@ class TestRecorderApp:
         "'Take me home?'", "'Whats the weather today?'", "'Set a timer for 10 minutes?'",
         "'How do you spell tree?'", "'Whats 10 + 20?'"]
 
-        tempPos = random.randint(0, len(questions))
+        tempPos = random.randint(0, len(questions)-1)
 
         if self.pos < 1:
             ask = "Say the phrase: "+questions[tempPos]+" in same emotion."
