@@ -405,7 +405,7 @@ if __name__ == "__main__":
     # print("Processing the data")
     # process_data("App/PreprocessedData/Audio", "App/PreprocessedData/Image", "App/json_files/data.json", False)
     # print("Training AI")
-    # a_history, i_history = train_models()
+    # train_models()
     # print("Gather test data")
     # audio_ac, image_ac, com_ac = test()
     # print("Display results")
