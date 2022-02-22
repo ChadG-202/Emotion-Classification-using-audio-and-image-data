@@ -1,6 +1,7 @@
 from unittest import result
 from DataApp import RecorderApp, ImageApp
 from TestApp import TestImageApp, TestRecorderApp
+from Results import ResultApp
 import tkinter as tk
 from audiomentations import Compose, AddGaussianNoise, PitchShift, TimeStretch, Shift
 import librosa
@@ -320,9 +321,9 @@ def train_models():
                 loss="sparse_categorical_crossentropy",
                 metrics=["accuracy"])
 
-    audio_model.summary()
+    # audio_model.summary()
 
-    audio_history = audio_model.fit(X_audio_train, y_audio_train, batch_size=2, epochs=40, validation_data=(X_audio_validation, y_audio_validation))
+    audio_history = audio_model.fit(X_audio_train, y_audio_train, batch_size=2, epochs=20, validation_data=(X_audio_validation, y_audio_validation), verbose=0)
 
     # Image train
     X_image_train = X_image_train.astype("float32")/255.0
@@ -337,9 +338,9 @@ def train_models():
                 loss="sparse_categorical_crossentropy",
                 metrics=["accuracy"])
 
-    image_model.summary()
+    # image_model.summary()
 
-    image_history = image_model.fit(X_image_train, y_image_train, batch_size=2, epochs=40, validation_data=(X_image_validation, y_image_validation))
+    image_history = image_model.fit(X_image_train, y_image_train, batch_size=2, epochs=20, validation_data=(X_image_validation, y_image_validation), verbose=0)
 
     # Save models
     audio_model.save("App/audioClassifier.model")
@@ -395,15 +396,20 @@ def test():
     return both_pred(audio_predictions[0], image_predictions[0])
 
 if __name__ == "__main__":
-    ImageApp(tk.Tk(),'Take Happy Photo')
-    RecorderApp(tk.Tk())
-    augment_data()
-    process_data("App/PreprocessedData/Audio", "App/PreprocessedData/Image", "App/json_files/data.json", False)
-    a_history, i_history = train_models()
-    audio_ac, image_ac, com_ac = test()
-    print(audio_ac)
-    print(image_ac)
-    print(com_ac)
-    # ResultApp(a_history, i_history, audio_ac, image_ac, com_ac)
-
-# Have a message tkinter screen that pops up with messages to explain whats going on, as well as finally showing the results
+    # print("Loading photo application")
+    # ImageApp(tk.Tk(),'Take Happy Photo')
+    # print("Loading audio application")
+    # RecorderApp(tk.Tk())
+    # print("Augmenting the data")
+    # augment_data()
+    # print("Processing the data")
+    # process_data("App/PreprocessedData/Audio", "App/PreprocessedData/Image", "App/json_files/data.json", False)
+    # print("Training AI")
+    # a_history, i_history = train_models()
+    # print("Gather test data")
+    # audio_ac, image_ac, com_ac = test()
+    # print("Display results")
+    audio_ac = [0.3, 0.7, 0.1]
+    image_ac = [0.25, 0.55, 0.2]
+    com_ac = [0.55, 1.25, 0.3]
+    ResultApp(tk.Tk(), audio_ac, image_ac, com_ac)
