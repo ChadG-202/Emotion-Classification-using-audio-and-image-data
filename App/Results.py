@@ -27,7 +27,8 @@ class ResultApp:
         self.img = ImageTk.PhotoImage(Image.open("App/PreprocessedTest/Image/test.jpg"))
 
         #audio
-        
+        self.audio_canv = Canvas(master=self.root, background="#4a4a4a")
+        self.audio_img = ImageTk.PhotoImage(Image.open("App/AppImages/audio-waves.png"))
 
         #Combine
         scoresText = "Happy: "+str(int((self.com_r[0]*100)/2))+"% Neutral: "+str(int((self.com_r[1]*100)/2))+"% Sad: "+str(int((self.com_r[2]*100)/2))+"%"
@@ -88,7 +89,10 @@ class ResultApp:
             type = "IMAGE"
             prediction = str(int(max(self.image_r)*100))+"%"+" "+self.emotion(self.image_r[0], self.image_r[1], self.image_r[2])
             self.canv.create_image(0, 0, image=self.img, anchor='nw')
+            self.audio_canv.place(x=600, y=500, width=128, height=128)
         elif self.pos == 1:
+            self.audio_canv.place(x=236, y=216, width=128, height=128)
+            self.audio_canv.create_image(0, 0, image=self.audio_img, anchor='nw')
             self.canv.place(x=600, y=500, width=48, height=48)
             type = "AUDIO"
             prediction = str(int(max(self.audio_r)*100))+"%"+" "+self.emotion(self.audio_r[0], self.audio_r[1], self.audio_r[2])
@@ -97,9 +101,11 @@ class ResultApp:
             type = "COMBINED"
             prediction = str(int((max(self.com_r)*100)/2))+"%"+" "+self.emotion(self.com_r[0], self.com_r[1], self.com_r[2])
             self.scores.place(x=10, y=250)
+            self.audio_canv.place(x=600, y=500, width=128, height=128)
         elif self.pos == 4:
             self.scores.place(x=600, y=500)
             self.canv.place(x=600, y=500, width=48, height=48)
+            self.audio_canv.place(x=600, y=500, width=128, height=128)
       
         if self.pos < 3:
             text = "The "+type+" emotion prediction is: "
