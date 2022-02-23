@@ -396,20 +396,20 @@ def test():
     return both_pred(audio_predictions[0], image_predictions[0])
 
 if __name__ == "__main__":
-    # print("Loading photo application")
+    # print("-----------------Loading photo application---------------------")
     # ImageApp(tk.Tk(),'Take Happy Photo')
-    # print("Loading audio application")
+    # print("----------------Loading audio application----------------------")
     # RecorderApp(tk.Tk())
-    # print("Augmenting the data")
+    # print("------------------Augmenting the data--------------------------")
     # augment_data()
-    # print("Processing the data")
+    # print("------------------Processing the data--------------------------")
     # process_data("App/PreprocessedData/Audio", "App/PreprocessedData/Image", "App/json_files/data.json", False)
-    # print("Training AI")
+    # print("----------------------Training AI------------------------------")
     # train_models()
-    # print("Gather test data")
-    # audio_ac, image_ac, com_ac = test()
-    # print("Display results")
-    audio_ac = [0.3, 0.7, 0.1]
-    image_ac = [0.25, 0.55, 0.2]
-    com_ac = [0.55, 1.25, 0.3]
+    print("-------------------Gather test data----------------------------")
+    audio_ac, image_ac, com_ac = test()
+    print("-------------------Display results-----------------------------")
+    # audio_ac = [0.3, 0.7, 0.1]
+    # image_ac = [0.25, 0.55, 0.2]
+    # com_ac = [0.55, 1.25, 0.3]
     ResultApp(tk.Tk(), audio_ac, image_ac, com_ac)
