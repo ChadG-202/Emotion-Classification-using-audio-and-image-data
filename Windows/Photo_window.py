@@ -21,20 +21,32 @@ class Photo_taker():
         self.vid = VideoCapture(self.video_source)
 
         # Label description
-        self.photo_description=tk.Label(text="Take Picture", font="arial 20 bold", background="#4a4a4a", fg="white")
-
+        self.my_string_var = tk.StringVar()
+        self.my_string_var.set("Take HAPPY photo make sure face is in the center")
+        self.photo_description=tk.Label(textvariable=self.my_string_var, font="arial 12 bold", background="#4a4a4a", fg="white")
+        self.photo_description2=tk.Label(text="of the camera and that both eyes can be seen.", font="arial 12 bold", background="#4a4a4a", fg="white")
         # Create a canvas that can fit the above video source size
         self.canvas = tk.Canvas(self.root, width = self.vid.width, height = self.vid.height)
         self.canvas.pack()
 
         # Button that lets the user take a snapshot
-        self.btn_snapshot=tk.Button(self.root, font="arial 20", text="Capture", bg="#111111", fg="white", border=0, command=self.snapshot)
+        self.btn_snapshot=tk.Button(self.root, font="arial 20", text="Snapshot", bg="#C1E1C1", fg="black", border=0, command=self.snapshot)
+
+        # Redo button
+        self.btn_retake=tk.Button(self.root, font="arial 20", text="Re-take", bg="#111111", fg="white", border=0, command=self.retake)
 
         # After it is called once, the update method will be automatically called every delay milliseconds
         self.delay=10
         self.update()
 
         self.root.mainloop()
+    
+    def retake(self):
+        if self.taken > 0:
+            if self.taken%10 == 0:
+                self.pos -=1
+            self.taken -= 1
+            self.update_title()
 
     def snapshot(self):
         # Get a frame from the video source
@@ -65,15 +77,20 @@ class Photo_taker():
                     if self.taken == 30:
                         self.pos =3
                         self.root.destroy()
+                
+                self.update_title()
 
-                if self.pos == 0:
-                    self.root.title('Take Happy Photo '+str(self.taken)+'/10')
-                elif self.pos == 1:
-                    self.root.title('Take Neutral Photo '+str(self.taken-10)+'/10')
-                elif self.pos == 2:
-                    self.root.title('Take Sad Photo '+str(self.taken-20)+'/10')
-                elif self.pos == 3:
-                    self.root.title('Done press x to move on!')
+    def update_title(self):
+        if self.pos == 0:
+            self.root.title('Take Happy Photo '+str(self.taken)+'/10')
+        elif self.pos == 1:
+            self.root.title('Take Neutral Photo '+str(self.taken-10)+'/10')
+            self.my_string_var.set("Take NEUTRAL photo make sure face is in the center")
+        elif self.pos == 2:
+            self.root.title('Take Sad Photo '+str(self.taken-20)+'/10')
+            self.my_string_var.set("Take SAD photo make sure face is in the center")
+        elif self.pos == 3:
+            self.root.title('Done press x to move on!')
        
     def update(self):
 
@@ -85,8 +102,10 @@ class Photo_taker():
         if ret:
             self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
             self.canvas.create_image(0, 0, image = self.photo, anchor = tk.NW)
-            self.photo_description.place(x=230, y=490)
-            self.btn_snapshot.place(x=270, y=540)
+            self.photo_description.place(x=150, y=485)
+            self.photo_description2.place(x=165, y=505)
+            self.btn_snapshot.place(x=330, y=540)
+            self.btn_retake.place(x=200, y=540)
         self.root.after(self.delay,self.update)
 
 
@@ -167,5 +186,3 @@ class CommandLineParser:
         # Parse the arguments and get all the values in the form of namespace.
         # Here args is of namespace and values will be accessed through tag names
         self.args = parser.parse_args()
-        
-# make it look better
