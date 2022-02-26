@@ -1,24 +1,29 @@
+from turtle import position
 import sounddevice as sound
 from scipy.io.wavfile import write
 import time
 import tkinter as tk
 
 class Audio_recorder:
-    def __init__(self, window, pos=0, emotion="Happy"):
-        self.pos = pos
-        self.emotion = emotion
+    def __init__(self, window, window_title, test_set, pos=0, taken=0, emotion='Happy'):
         self.root = window
-        self.root.geometry("600x500")
+        self.root.title(window_title)
+        self.test_set = test_set
+        self.pos = pos
+        self.taken = taken
+        self.emotion = emotion
+
+        self.root.geometry("640x600")
         self.root.resizable(False, False)
         self.root.title("Voice Recorder")
         self.root.configure(background="#4a4a4a")
 
         #Icon
-        self.image_icon=tk.PhotoImage(file="App/AppImages/rec-button.png")
+        self.image_icon=tk.PhotoImage(file="App_Images/rec-button.png")
         self.root.iconphoto(False, self.image_icon)
 
         #Logo
-        self.photo=tk.PhotoImage(file="App/AppImages/rec-button.png")
+        self.photo=tk.PhotoImage(file="App_Images/rec-button.png")
         self.myimage=tk.Label(image=self.photo,background="#4a4a4a")
         self.myimage.pack(pady=30)
 
@@ -47,8 +52,8 @@ class Audio_recorder:
             time.sleep(1)
 
         sound.wait()
-        write("App/AppData/Audio/"+type+"/"+path+".wav",freq,recording)
-        write("App/PreprocessedData/Audio/"+type+"/"+path+".wav",freq,recording)
+        write("App_Data/Training/Raw/Audio/"+type+"/"+path+".wav",freq,recording)
+        write("App_Data/Training/Preprocessed/Audio/"+type+"/"+path+".wav",freq,recording)
 
         self.pos +=1
         self.sentence()
@@ -63,6 +68,7 @@ class Audio_recorder:
         "'How do you spell tree?'", "'Whats 10 + 20?'"]
 
         tempPos = self.pos
+
         if self.pos > 9 and self.pos < 20:
             tempPos = self.pos - 10
             self.emotion = "Neutral"
@@ -73,5 +79,7 @@ class Audio_recorder:
         if self.pos < 30:
             ask = "Say the phrase: "+questions[tempPos]+" in a "+self.emotion+" voice."
             tk.Label(text=f"{ask}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=20, y=350)
+            position = self.emotion+": "+str(tempPos)+"/10"
+            tk.Label(text=f"{position}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=20, y=380)
         else:
             self.root.destroy()

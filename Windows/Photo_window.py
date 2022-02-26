@@ -7,26 +7,28 @@ import argparse
 class Photo_taker():
     def __init__(self, window, window_title, test_set, video_source=0, pos=0, taken=0, ok=False):
         self.root = window
-        if test_set:
-            self.root.title(window_title)
-        else:
-            self.root.title(window_title+str(taken)+'/10')
+        self.root.title(window_title)
         self.test_set = test_set
         self.video_source = video_source
         self.pos = pos
         self.taken = taken
         self.ok=ok
 
+        self.root.configure(background="#4a4a4a")
+        self.root.geometry("640x600")
+
         # open video source (by default this will try to open the computer webcam)
         self.vid = VideoCapture(self.video_source)
+
+        # Label description
+        self.photo_description=tk.Label(text="Take Picture", font="arial 20 bold", background="#4a4a4a", fg="white")
 
         # Create a canvas that can fit the above video source size
         self.canvas = tk.Canvas(self.root, width = self.vid.width, height = self.vid.height)
         self.canvas.pack()
 
         # Button that lets the user take a snapshot
-        self.btn_snapshot=tk.Button(window, text="Snapshot", command=self.snapshot)
-        self.btn_snapshot.pack(side=tk.LEFT)
+        self.btn_snapshot=tk.Button(self.root, font="arial 20", text="Capture", bg="#111111", fg="white", border=0, command=self.snapshot)
 
         # After it is called once, the update method will be automatically called every delay milliseconds
         self.delay=10
@@ -65,11 +67,11 @@ class Photo_taker():
                         self.root.destroy()
 
                 if self.pos == 0:
-                    self.root.title('Take Happy Photo'+str(self.taken)+'/10')
+                    self.root.title('Take Happy Photo '+str(self.taken)+'/10')
                 elif self.pos == 1:
-                    self.root.title('Take Neutral Photo'+str(self.taken-10)+'/10')
+                    self.root.title('Take Neutral Photo '+str(self.taken-10)+'/10')
                 elif self.pos == 2:
-                    self.root.title('Take Sad Photo'+str(self.taken-20)+'/10')
+                    self.root.title('Take Sad Photo '+str(self.taken-20)+'/10')
                 elif self.pos == 3:
                     self.root.title('Done press x to move on!')
        
@@ -83,6 +85,8 @@ class Photo_taker():
         if ret:
             self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
             self.canvas.create_image(0, 0, image = self.photo, anchor = tk.NW)
+            self.photo_description.place(x=230, y=490)
+            self.btn_snapshot.place(x=270, y=540)
         self.root.after(self.delay,self.update)
 
 
