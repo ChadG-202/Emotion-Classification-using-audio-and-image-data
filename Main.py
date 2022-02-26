@@ -10,4 +10,5 @@ if __name__ == "__main__":
     Audio_recorder(tk.Tk(), 'Audio Recorder', False)
 
     # design of both, add redo, add text to image and add test feature to audio
+    # try other audio methode to gather wave files
     # comment code
