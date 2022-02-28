@@ -4,7 +4,9 @@ import PIL.Image, PIL.ImageTk
 import argparse
 import dlib
 
-
+'''
+Tkinter window which can be used to view, take and store pictures.
+'''
 class Photo_taker():
     def __init__(self, window, window_title, test_set, video_source=0, pos=0, taken=0, ok=False):
         self.root = window
@@ -26,6 +28,7 @@ class Photo_taker():
         self.my_string_var.set("Take HAPPY photo make sure face is in the center")
         self.photo_description=tk.Label(textvariable=self.my_string_var, font="arial 12 bold", background="#4a4a4a", fg="white")
         self.photo_description2=tk.Label(text="of the camera and that both eyes can be seen.", font="arial 12 bold", background="#4a4a4a", fg="white")
+
         # Create a canvas that can fit the above video source size
         self.canvas = tk.Canvas(self.root, width = self.vid.width, height = self.vid.height)
         self.canvas.pack()
@@ -42,6 +45,7 @@ class Photo_taker():
 
         self.root.mainloop()
     
+    # Take photo again
     def retake(self):
         if self.taken > 0:
             if self.taken%10 == 0:
@@ -49,6 +53,7 @@ class Photo_taker():
             self.taken -= 1
             self.update_title()
 
+    # Make sure there is 1 face visible in photo
     def check_face(self, path):
         detector = dlib.get_frontal_face_detector()
 
@@ -65,12 +70,13 @@ class Photo_taker():
             print("Too many faces")
             return True
 
-
+    # Take a photo and store in relevant folder
     def snapshot(self):
         # Get a frame from the video source
         ret,frame=self.vid.get_frame()
 
         if ret:
+            # Test data
             if self.test_set:
                 if self.taken < 1:
                     cv2.imwrite("App_Data/Test/Raw/Image/test.jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
@@ -79,6 +85,7 @@ class Photo_taker():
                     self.taken += 1
                     if self.taken > 0:
                         self.root.destroy()
+            # Training data
             else:
                 if self.taken < 10:
                     cv2.imwrite("App_Data/Training/Raw/Image/Happy/"+str(self.taken)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
@@ -106,6 +113,7 @@ class Photo_taker():
                 
                 self.update_title()
 
+    # Update title
     def update_title(self):
         if self.pos == 0:
             self.root.title('Take Happy Photo '+str(self.taken+1)+'/10')
@@ -117,10 +125,12 @@ class Photo_taker():
             self.my_string_var.set("Take SAD photo make sure face is in the center")
         elif self.pos == 3:
             self.root.title('Done press x to move on!')
-       
+    
+    # Update tkinter window
     def update(self):
         # Get a frame from the video source
         ret, frame = self.vid.get_frame()
+
         if self.ok:
             self.vid.out.write(cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
 
@@ -133,7 +143,9 @@ class Photo_taker():
             self.btn_retake.place(x=200, y=540)
         self.root.after(self.delay,self.update)
 
-
+'''
+Display video source to tkinter window
+'''
 class VideoCapture:
     def __init__(self, video_source=0):
         # Open the video source
@@ -144,10 +156,7 @@ class VideoCapture:
         # Command Line Parser
         args=CommandLineParser().args
 
-        
-        #create videowriter
-
-        # 1. Video Type
+        # Video Type
         VIDEO_TYPE = {
             'avi': cv2.VideoWriter_fourcc(*'XVID'),
             #'mp4': cv2.VideoWriter_fourcc(*'H264'),
@@ -156,7 +165,7 @@ class VideoCapture:
 
         self.fourcc=VIDEO_TYPE[args.type[0]]
 
-        # 2. Video Dimension
+        # Video Dimension
         STD_DIMENSIONS =  {
             '480p': (640, 480),
             '720p': (1280, 720),
@@ -166,7 +175,7 @@ class VideoCapture:
         res=STD_DIMENSIONS[args.res[0]]
         print(args.name,self.fourcc,res)
 
-        #set video sourec width and height
+        # Set video sourec width and height
         self.vid.set(3,res[0])
         self.vid.set(4,res[1])
 
@@ -193,9 +202,7 @@ class VideoCapture:
             cv2.destroyAllWindows()
 
 class CommandLineParser:
-    
     def __init__(self):
-
         # Create object of the Argument Parser
         parser=argparse.ArgumentParser(description='Script to take photo')
 
