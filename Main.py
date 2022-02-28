@@ -1,3 +1,5 @@
+import json
+import math
 from Windows.Reply_bot_window import Reply_bot
 from Windows.Result_window import Result
 from Windows.Start_window import Start
@@ -93,6 +95,90 @@ def augment_image_data(path, aug_path):
             for x, val in zip(datagen.flow(X, batch_size=5, save_to_dir=os.path.join(aug_path, semantic_label), save_prefix=f_s[0], save_format=f_s[1]),range(9)):     
                 pass
 
+# Process audio and image data - store in data.json file
+def Process(audio_path, image_path, json_path, n_mfcc=13, n_fft=2048, hop_length=512, num_segments=1):
+    # Audio Var
+    SAMPLE_RATE = 22050
+    DURATION = 4
+    SAMPLES_PER_TRACK = SAMPLE_RATE * DURATION
+
+    # Image Var
+    IMG_SIZE = 48
+    data = {
+        "mapping": [],
+        "mfcc": [],
+        "image": [],
+        "labels": []
+    }
+    
+    # how many samples for each audio input
+    num_samples_per_segment = int(SAMPLES_PER_TRACK / num_segments) 
+    # number of mfccs if samples are made
+    expected_num_mfcc_vectors_per_segment = math.ceil(num_samples_per_segment / hop_length) 
+    
+    # walk through audio directories
+    for i, (dirpath, dirnames, filenames) in enumerate(os.walk(audio_path)):
+        if dirpath is not audio_path:
+            dirpath_components = dirpath.split("/")
+            semantic_label = dirpath_components[-1]
+            # store the directories opened
+            data["mapping"].append(semantic_label)
+            
+            print("\nProcessing {}".format(semantic_label))
+            
+            for f in filenames:
+                try:
+                    file_path = os.path.join(dirpath, f)
+                    signal, sr = librosa.load(file_path, sr=SAMPLE_RATE)
+                except Exception as e:                                                    
+                    print('Audio failed to process: ' + e)
+                
+                for s in range(num_segments):
+                    # Process audio
+                    start_sample = num_samples_per_segment * s
+                    finish_sample = start_sample + num_samples_per_segment
+                        
+                    mfcc = librosa.feature.mfcc(signal[start_sample:finish_sample],
+                                            sr=sr,
+                                            n_fft=n_fft,
+                                            n_mfcc=n_mfcc,
+                                            hop_length=hop_length)
+
+                    mfcc = mfcc.T
+                    
+                    if len(mfcc) == expected_num_mfcc_vectors_per_segment:
+                        # store mfcc data
+                        data["mfcc"].append(mfcc.tolist())
+                        # store audio type
+                        data["labels"].append(i-1)
+                        print("{}, segment:{}".format(file_path, s+1))
+    
+    # walk through image directories
+    for i, (dirpath, dirnames, filenames) in enumerate(os.walk(image_path)):
+        if dirpath is not image_path:
+            dirpath_components = dirpath.split("/")
+            semantic_label = dirpath_components[-1]
+            # store the directories opened
+            data["mapping"].append(semantic_label)
+            
+            print("\nProcessing {}".format(semantic_label))
+            
+            for f in filenames:
+                file_path = os.path.join(dirpath, f)
+                try:
+                    # process image
+                    img_array = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE) 
+                    sized_array = cv2.resize(img_array, (IMG_SIZE, IMG_SIZE))
+                    # store image data
+                    data["image"].append(sized_array.tolist())
+                    print("{}".format(file_path))
+                except Exception as e:                                                    
+                    print('Image failed to process: ' + e)
+    
+    # dump stored data into json file
+    with open(json_path, "w") as fp:
+        json.dump(data, fp, indent=4)
+
 def Preprocess():
     augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
     augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
@@ -110,6 +196,7 @@ if __name__ == "__main__":
     # Photo_taker(tk.Tk(),'Take Happy Photo 1/10', False)
     # Audio_recorder(tk.Tk(), 'Audio Recorder', False)
     Preprocess()
+    Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json")
     # Train()
     # Photo_taker(tk.Tk(),'Take Photo', True)
     # Audio_recorder(tk.Tk(), 'Audio Recorder', True)
@@ -117,5 +204,6 @@ if __name__ == "__main__":
     # Result(tk.Tk())
     # Reply_bot(tk.Tk())
 
+    # process needs to work for both train and test data
     # delete and augment again if cant crop
-    # if augmented data doesnt equal 110 then limit all to lowest one
+    # if augmented data doesnt equal 110 then copy final image till it reaches 110
