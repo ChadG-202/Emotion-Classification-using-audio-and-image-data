@@ -7,16 +7,14 @@ import tkinter as tk
 
 if __name__ == "__main__":
     # Start(tk.Tk())
-    # Photo_taker(tk.Tk(),'Take Happy Photo 0/10', False)
-    Audio_recorder(tk.Tk(), 'Audio Recorder', False)
+    # Photo_taker(tk.Tk(),'Take Happy Photo 1/10', False)
+    # Audio_recorder(tk.Tk(), 'Audio Recorder', False)
     # Train()
     # Photo_taker(tk.Tk(),'Take Photo', True)
-    # Audio_recorder(tk.Tk(), 'Audio Recorder', True)
+    Audio_recorder(tk.Tk(), 'Audio Recorder', True)
     # Predict()
     # Result(tk.Tk())
+    # Reply_bot(tk.Tk())
 
-
-    # add redo
-    # try other audio method to gather wave files
     # if augmented data doesnt equal 110 then limit all to lowest one
     # comment code

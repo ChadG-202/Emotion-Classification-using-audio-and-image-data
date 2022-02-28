@@ -108,12 +108,12 @@ class Photo_taker():
 
     def update_title(self):
         if self.pos == 0:
-            self.root.title('Take Happy Photo '+str(self.taken)+'/10')
+            self.root.title('Take Happy Photo '+str(self.taken+1)+'/10')
         elif self.pos == 1:
-            self.root.title('Take Neutral Photo '+str(self.taken-10)+'/10')
+            self.root.title('Take Neutral Photo '+str(self.taken+1-10)+'/10')
             self.my_string_var.set("Take NEUTRAL photo make sure face is in the center")
         elif self.pos == 2:
-            self.root.title('Take Sad Photo '+str(self.taken-20)+'/10')
+            self.root.title('Take Sad Photo '+str(self.taken+1-20)+'/10')
             self.my_string_var.set("Take SAD photo make sure face is in the center")
         elif self.pos == 3:
             self.root.title('Done press x to move on!')

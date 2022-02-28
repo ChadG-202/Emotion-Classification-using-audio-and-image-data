@@ -1,8 +1,8 @@
 import random
-from turtle import position
-import sounddevice as sound
-from scipy.io.wavfile import write
-import time
+import pyaudio
+import wave
+from pydub import AudioSegment
+from pydub.playback import play
 import tkinter as tk
 
 class Audio_recorder:
@@ -38,31 +38,75 @@ class Audio_recorder:
 
         self.root.mainloop()
     
-    def retake():
-        pass
+    def retake(self):
+        if self.pos > 0:
+            if self.pos%10 == 0:
+                if self.emotion == "Neutral":
+                    self.emotion = "Happy"
+                elif self.emotion == "Sad":
+                    self.emotion == "Neutral"
+            self.pos -= 1
+            self.sentence()
 
-    def Recording(self, type, path):
-        freq=22050
-        dur=4
-        channel=2
-        recording=sound.rec(dur*freq, samplerate=freq,channels=channel)
+    def Recording(self, type, pos):
+        p = pyaudio.PyAudio()
 
-        #Timer
-        timeLeft=dur
-        while timeLeft>0:
-            timeLeft-=1
+        channels = 2
+        rate = 22050
+        chunk = 1024
+        seconds = 4
+
+        stream = p.open(format=pyaudio.paInt16,
+                        channels=channels,
+                        rate=rate,
+                        input=True,
+                        frames_per_buffer=chunk)
+
+        frames = []
+
+        for i in range(0, int(rate / chunk * seconds)):
+            if i < 21:
+                timeLeft = "3"
+            elif i > 21 and i < 43:
+                timeLeft = "2"
+            elif i > 43 and i < 64:
+                timeLeft = "1"
+            elif i > 64:
+                timeLeft = "0"
             tk.Label(text=f"{str(timeLeft)}", font="arial 40",width=4,background="#4a4a4a").place(x=260, y=520)
             self.root.update()
-            time.sleep(1)
+            data = stream.read(chunk)
+            frames.append(data)
 
-        sound.wait()
+        stream.stop_stream()
+        stream.close()
+        p.terminate()
+        
         if self.test_set:
-            write("App_Data/Test/Preprocessed/Audio/test.wav",freq,recording)
+            wf = wave.open("App_Data/Test/Preprocessed/Audio/test.wav", 'wb')
+            wf.setnchannels(channels)
+            wf.setsampwidth(p.get_sample_size(pyaudio.paInt16))
+            wf.setframerate(rate)
+            wf.writeframes(b''.join(frames))
+            wf.close()
         else:
-            write("App_Data/Training/Raw/Audio/"+type+"/"+path+".wav",freq,recording)
-            write("App_Data/Training/Preprocessed/Audio/"+type+"/"+path+".wav",freq,recording)
+            wf = wave.open("App_Data/Training/Raw/Audio/"+type+"/"+pos+".wav", 'wb')
+            wf.setnchannels(channels)
+            wf.setsampwidth(p.get_sample_size(pyaudio.paInt16))
+            wf.setframerate(rate)
+            wf.writeframes(b''.join(frames))
+            wf.close()
+            wf2 = wave.open("App_Data/Training/Preprocessed/Audio/"+type+"/"+pos+".wav", 'wb')
+            wf2.setnchannels(channels)
+            wf2.setsampwidth(p.get_sample_size(pyaudio.paInt16))
+            wf2.setframerate(rate)
+            wf2.writeframes(b''.join(frames))
+            wf2.close()
 
-        self.pos +=1
+            song = AudioSegment.from_wav("App_Data/Training/Raw/Audio/"+type+"/"+pos+".wav")
+            play(song)
+
+        self.pos += 1
         self.sentence()
 
     def Record(self):
@@ -94,7 +138,7 @@ class Audio_recorder:
             if self.pos < 30:
                 ask = "Say the phrase: "+questions[tempPos]+" in a "+self.emotion+" voice."
                 tk.Label(text=f"{ask}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=45, y=450)
-                position = self.emotion+": "+str(tempPos)+"/10"
+                position = self.emotion+": "+str(tempPos+1)+"/10"
                 tk.Label(text=f"{position}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=45, y=480)
             else:
                 self.root.destroy()
