@@ -2,6 +2,7 @@ import tkinter as tk
 import cv2
 import PIL.Image, PIL.ImageTk
 import argparse
+import dlib
 
 
 class Photo_taker():
@@ -48,6 +49,23 @@ class Photo_taker():
             self.taken -= 1
             self.update_title()
 
+    def check_face(self, path):
+        detector = dlib.get_frontal_face_detector()
+
+        frame =cv2.imread(path)
+        gray =cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+        faces = detector(gray)
+
+        if len(faces) == 0:
+            print("No face found")
+            return True
+        elif len(faces) == 1:
+            return False
+        elif len(faces) > 1:
+            print("Too many faces")
+            return True
+
+
     def snapshot(self):
         # Get a frame from the video source
         ret,frame=self.vid.get_frame()
@@ -56,22 +74,30 @@ class Photo_taker():
             if self.test_set:
                 if self.taken < 1:
                     cv2.imwrite("App_Data/Test/Raw/Image/test.jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
+                    if self.check_face("App_Data/Test/Raw/Image/test.jpg"):
+                        self.retake()
                     self.taken += 1
                     if self.taken > 0:
                         self.root.destroy()
             else:
                 if self.taken < 10:
                     cv2.imwrite("App_Data/Training/Raw/Image/Happy/"+str(self.taken)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
+                    if self.check_face("App_Data/Training/Raw/Image/Happy/"+str(self.taken)+".jpg"):
+                        self.retake()
                     self.taken +=1
                     if self.taken == 10:
                         self.pos =1
                 elif self.taken >= 10 and self.taken < 20:
                     cv2.imwrite("App_Data/Training/Raw/Image/Neutral/"+str(self.taken-10)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
+                    if self.check_face("App_Data/Training/Raw/Image/Neutral/"+str(self.taken-10)+".jpg"):
+                        self.retake()
                     self.taken +=1
                     if self.taken == 20:
                         self.pos =2
                 elif self.taken >= 20 and self.taken < 30:
                     cv2.imwrite("App_Data/Training/Raw/Image/Sad/"+str(self.taken-20)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
+                    if self.check_face("App_Data/Training/Raw/Image/Sad/"+str(self.taken-20)+".jpg"):
+                        self.retake()
                     self.taken +=1
                     # Finished
                     if self.taken == 30:
@@ -93,7 +119,6 @@ class Photo_taker():
             self.root.title('Done press x to move on!')
        
     def update(self):
-
         # Get a frame from the video source
         ret, frame = self.vid.get_frame()
         if self.ok:

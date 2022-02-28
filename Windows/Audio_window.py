@@ -31,11 +31,15 @@ class Audio_recorder:
         tk.Label(text="Voice Recorder", font="arial 30 bold", background="#4a4a4a", fg="white").pack()
 
         #Button
-        self.record = tk.Button(self.root, font="arial 20", text="Record",bg="#111111",fg="white",border=0,command=self.Record).pack(pady=30)
+        self.record = tk.Button(self.root, font="arial 20", text="Record",bg="#C1E1C1",fg="black",border=0,command=self.Record).pack(pady=20)
+        self.btn_retake=tk.Button(self.root, font="arial 20", text="Re-take", bg="#111111", fg="white", border=0, command=self.retake).pack(pady=10)
 
         self.sentence()
 
         self.root.mainloop()
+    
+    def retake():
+        pass
 
     def Recording(self, type, path):
         freq=22050
@@ -47,7 +51,7 @@ class Audio_recorder:
         timeLeft=dur
         while timeLeft>0:
             timeLeft-=1
-            tk.Label(text=f"{str(timeLeft)}", font="arial 40",width=4,background="#4a4a4a").place(x=240, y=420)
+            tk.Label(text=f"{str(timeLeft)}", font="arial 40",width=4,background="#4a4a4a").place(x=260, y=520)
             self.root.update()
             time.sleep(1)
 
@@ -76,7 +80,7 @@ class Audio_recorder:
             if self.pos < 1:
                 sen = random.randint(0, 9)
                 text = "Say the phrase: "+questions[sen]+" in chosen emotion."
-                tk.Label(text=f"{text}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=20, y=350)
+                tk.Label(text=f"{text}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=45, y=450)
             else:
                 self.root.destroy()
         else:
@@ -89,8 +93,8 @@ class Audio_recorder:
 
             if self.pos < 30:
                 ask = "Say the phrase: "+questions[tempPos]+" in a "+self.emotion+" voice."
-                tk.Label(text=f"{ask}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=20, y=350)
+                tk.Label(text=f"{ask}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=45, y=450)
                 position = self.emotion+": "+str(tempPos)+"/10"
-                tk.Label(text=f"{position}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=20, y=380)
+                tk.Label(text=f"{position}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=45, y=480)
             else:
                 self.root.destroy()
