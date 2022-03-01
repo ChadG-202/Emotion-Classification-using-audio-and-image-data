@@ -303,18 +303,18 @@ def Test():
     # Audio_recorder(tk.Tk(), 'Audio Recorder', True)
     # Preprocess(True)
     Process("App_Data/Test/Preprocessed/Audio", "App_Data/Test/Preprocessed/Image", "JSON_files/TestData.json")
-    # Predict()
-    # Result(tk.Tk())
-    # Reply_bot(tk.Tk())
+    # audio_ac, image_ac, com_ac = Predict()
+    # Result(tk.Tk(), audio_ac, image_ac, com_ac)
+    # Reply_bot(tk.Tk(), com_ac)
 
 if __name__ == "__main__":
-    Start(tk.Tk(), 'Emotion Chatbot')
+    # Start(tk.Tk(), 'Emotion Chatbot')
     # Photo_taker(tk.Tk(),'Take Happy Photo 1/10', False)
     # Audio_recorder(tk.Tk(), 'Audio Recorder', False)
     # Preprocess(False)
     # Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json")
     # Train_models("JSON_files/TrainData.json", 48)
-    # Test()
+    Test()
 
 
     # process needs to work for both train and test data
