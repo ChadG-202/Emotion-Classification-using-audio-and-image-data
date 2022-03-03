@@ -317,5 +317,13 @@ if __name__ == "__main__":
     Test()
 
 
-    # process needs to work for both train and test data
-    # if augmented data doesnt equal 110 then copy final image till it reaches 110
+    #TODO process needs to work for both train and test data
+    #TODO if augmented data doesnt equal 110 then limit to smallest dataset
+    #TODO Allow user to choose number of smaples they take
+    #TODO Have a test set mode
+    #TODO Predict results
+    #TODO display results
+    #TODO create a chatbot window and chatbot to reply
+    #TODO make it loop test
+    #TODO create a training enviroment to train the model on around 300 samples find best model for task (Compare MLP, CNN, other)
+    #TODO create junit tests
