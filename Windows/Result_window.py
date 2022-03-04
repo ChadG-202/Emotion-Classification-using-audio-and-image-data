@@ -2,6 +2,7 @@ import tkinter as tk
 from PIL import ImageTk, Image
 from pydub import AudioSegment
 from pydub.playback import play
+import speech_recognition as sr
 
 
 class Result():
@@ -96,9 +97,23 @@ class Result():
         else:
             result += "Happy or Neutral or Sad"
         return result
+
+    def Get_reply(self):
+        predicted_emotion = self.emotion(self.com_r[0], self.com_r[1], self.com_r[2])
+        return "this would be the reply because you are "+predicted_emotion
     
     def Chatbot(self):
-        self.label3 = tk.Label(text="This is the answer to your question.", font="arial 20",width=40,background="#4a4a4a",fg="#98FB98").place(x=0, y=200)
+        r = sr.Recognizer()
+        audio = False
+        with sr.AudioFile("App_Data/Test/Preprocessed/Audio/test.wav") as source:
+            audio = r.record(source)
+        try:
+            s = r.recognize_google(audio)
+            tk.Label(text="You asked: "+s, font="arial 20",width=40,background="#4a4a4a",fg="white").place(x=0, y=150)
+        except Exception as e:
+            print("Exception: "+str(e))
+        reply = self.Get_reply()
+        tk.Label(text="Chatbot reply: "+reply, font="arial 12",width=60,background="#4a4a4a",fg="#98FB98").place(x=0, y=200)
 
     def Clear(self):
         self.canv.place(x=640, y=600)
@@ -118,7 +133,7 @@ class Result():
             self.canv.place(x=296, y=300, width=48, height=48)
             self.canv.create_image(0, 0, image=self.img, anchor='nw')
             self.nextB.place(x=550, y=530)
-            
+
         elif self.pos == 1:
             self.Clear()
             

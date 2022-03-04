@@ -392,6 +392,5 @@ if __name__ == "__main__":
     #? Allow user to choose number of samples they take
     #? Have a test set mode
     #TODO create a chatbot to reply
-    #TODO make it loop test
     #TODO create a training enviroment to train the model on around 300 samples find best model for task (Compare MLP, CNN, other)
     #TODO create junit tests
