@@ -375,7 +375,7 @@ def Test():
     # Process("App_Data/Test/Preprocessed/Audio/test.wav", "App_Data/Test/Preprocessed/Image/test.jpg", "JSON_files/TestData.json", True)
     audio_result, image_result, combined_result = Predict()
     again = Result(tk.Tk(), audio_result, image_result, combined_result)
-    if again:
+    if str(again) == "y":
         Test()
 
 if __name__ == "__main__":
@@ -391,8 +391,7 @@ if __name__ == "__main__":
     #? if augmented data doesnt equal 110 then limit to smallest dataset
     #? Allow user to choose number of samples they take
     #? Have a test set mode
-    #TODO display results
-    #TODO create a chatbot window and chatbot to reply
+    #TODO create a chatbot to reply
     #TODO make it loop test
     #TODO create a training enviroment to train the model on around 300 samples find best model for task (Compare MLP, CNN, other)
     #TODO create junit tests
