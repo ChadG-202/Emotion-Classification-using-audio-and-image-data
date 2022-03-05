@@ -394,3 +394,4 @@ if __name__ == "__main__":
     #TODO create a chatbot to reply
     #TODO create a training enviroment to train the model on around 300 samples find best model for task (Compare MLP, CNN, other)
     #TODO create junit tests
+    #! add play bot reply button if clicked again dont reprocess just play audio clip

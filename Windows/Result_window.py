@@ -3,7 +3,8 @@ from PIL import ImageTk, Image
 from pydub import AudioSegment
 from pydub.playback import play
 import speech_recognition as sr
-
+from gtts import gTTS
+from playsound import playsound
 
 class Result():
     def __init__(self, window, audio_results, image_results, combined_results, pos=0, again="n"):
@@ -73,8 +74,8 @@ class Result():
         self.root.destroy()
     
     def play_sample(self):
-        song = AudioSegment.from_wav("App_Data/Test/Preprocessed/Audio/test.wav")
-        play(song)
+        sample = AudioSegment.from_wav("App_Data/Test/Preprocessed/Audio/test.wav")
+        play(sample)
 
     def answer(self):
         self.pos = -1
@@ -89,31 +90,120 @@ class Result():
         elif sad > happy and sad > neutral:
             result += "Sad"
         elif happy > neutral and happy == sad:
-            result += "Happy or Sad"
+            result += "Happy" #! Happy biast
         elif happy > sad and happy == neutral:
-            result += "Happy or Neutral"
+            result += "Happy" #! Happy biast
         elif neutral > happy and neutral == sad:
-            result += "Neutral or Sad"
+            result += "Neutral" #! Neutral biast
         else:
-            result += "Happy or Neutral or Sad"
+            result += "Sad" #! Sad biast
         return result
 
-    def Get_reply(self):
-        predicted_emotion = self.emotion(self.com_r[0], self.com_r[1], self.com_r[2])
-        return "this would be the reply because you are "+predicted_emotion
+    def Get_reply(self, question, emotion):
+        reply = ""
+        if question == "can you help me":
+            if emotion == "Happy":
+                reply = "Yes, i'm always in the mood to help you"
+            elif emotion == "sad":
+                reply = "Are you alright, what do you need?"
+            else:
+                reply = "What do you need?"
+
+        elif question == "what is the weather today":
+            if emotion == "Happy":
+                reply = ""
+            elif emotion == "sad":
+                reply = "Hopefully your mood will be lifted as its sunny todays with a high of 12 degrees."
+            else:
+                reply = "It looks to be sunny with a high of 12 degrees."
+
+        elif question == "take me home":
+            if emotion == "Happy":
+                reply = "Of course finding the best routes for you to get home."
+            elif emotion == "sad":
+                reply = ""
+            else:
+                reply = ""
+
+        elif question == "":
+            if emotion == "Happy":
+                reply = ""
+            elif emotion == "sad":
+                reply = ""
+            else:
+                reply = ""
+
+        elif question == "":
+            if emotion == "Happy":
+                reply = ""
+            elif emotion == "sad":
+                reply = ""
+            else:
+                reply = ""
+
+        elif question == "":
+            if emotion == "Happy":
+                reply = ""
+            elif emotion == "sad":
+                reply = ""
+            else:
+                reply = ""
+
+        elif question == "":
+            if emotion == "Happy":
+                reply = ""
+            elif emotion == "sad":
+                reply = ""
+            else:
+                reply = ""
+
+        elif question == "":
+            if emotion == "Happy":
+                reply = ""
+            elif emotion == "sad":
+                reply = ""
+            else:
+                reply = ""
+                
+        elif question == "":
+            if emotion == "Happy":
+                reply = ""
+            elif emotion == "sad":
+                reply = ""
+            else:
+                reply = ""
+
+        elif question == "":
+            if emotion == "Happy":
+                reply = ""
+            elif emotion == "sad":
+                reply = ""
+            else:
+                reply = ""
+        else:
+            reply = "Unable to match your question. Try again."
+    
+        bot_reply = gTTS(text=reply, lang="en", slow=False)
+
+        bot_reply.save("Chatbot/bot_reply.mp3")
+        
+        playsound("Chatbot/bot_reply.mp3")
     
     def Chatbot(self):
         r = sr.Recognizer()
-        audio = False
+
         with sr.AudioFile("App_Data/Test/Preprocessed/Audio/test.wav") as source:
             audio = r.record(source)
         try:
-            s = r.recognize_google(audio)
-            tk.Label(text="You asked: "+s, font="arial 20",width=40,background="#4a4a4a",fg="white").place(x=0, y=150)
+            question = r.recognize_google(audio)
+            tk.Label(text="You asked: "+question, font="arial 20",width=40,background="#4a4a4a",fg="white").place(x=0, y=150)
         except Exception as e:
             print("Exception: "+str(e))
-        reply = self.Get_reply()
-        tk.Label(text="Chatbot reply: "+reply, font="arial 12",width=60,background="#4a4a4a",fg="#98FB98").place(x=0, y=200)
+
+        tk.Label(text="Chatbot should reply based on your question and emotion.", font="arial 15",width=58,background="#4a4a4a",fg="#98FB98").place(x=0, y=230)
+        tk.Label(text="Turn sound on to hear reply!", font="arial 12",width=70,background="#4a4a4a",fg="#98FB98").place(x=0, y=280)
+
+        self.Get_reply(question, self.emotion(self.com_r[0], self.com_r[1], self.com_r[2]))
 
     def Clear(self):
         self.canv.place(x=640, y=600)
@@ -166,4 +256,3 @@ class Result():
             text = "The "+type+" emotion prediction is: "
             self.text1.set(text)
             self.text2.set(prediction)
-            

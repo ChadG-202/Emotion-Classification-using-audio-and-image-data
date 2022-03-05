@@ -103,8 +103,8 @@ class Audio_recorder:
             wf2.writeframes(b''.join(frames))
             wf2.close()
 
-            song = AudioSegment.from_wav("App_Data/Training/Raw/Audio/"+type+"/"+pos+".wav")
-            play(song)
+            question = AudioSegment.from_wav("App_Data/Training/Raw/Audio/"+type+"/"+pos+".wav")
+            play(question)
 
         self.pos += 1
         self.sentence()
