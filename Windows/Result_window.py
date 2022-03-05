@@ -104,15 +104,15 @@ class Result():
         if question == "can you help me":
             if emotion == "Happy":
                 reply = "Yes, i'm always in the mood to help you"
-            elif emotion == "sad":
+            elif emotion == "Sad":
                 reply = "Are you alright, what do you need?"
             else:
                 reply = "What do you need?"
 
         elif question == "what is the weather today":
             if emotion == "Happy":
-                reply = ""
-            elif emotion == "sad":
+                reply = "The weather is like your mood sunny wiht a high of 12 degrees"
+            elif emotion == "Sad":
                 reply = "Hopefully your mood will be lifted as its sunny todays with a high of 12 degrees."
             else:
                 reply = "It looks to be sunny with a high of 12 degrees."
@@ -128,7 +128,7 @@ class Result():
         elif question == "":
             if emotion == "Happy":
                 reply = ""
-            elif emotion == "sad":
+            elif emotion == "Sad":
                 reply = ""
             else:
                 reply = ""
@@ -136,7 +136,7 @@ class Result():
         elif question == "":
             if emotion == "Happy":
                 reply = ""
-            elif emotion == "sad":
+            elif emotion == "Sad":
                 reply = ""
             else:
                 reply = ""
@@ -144,7 +144,7 @@ class Result():
         elif question == "":
             if emotion == "Happy":
                 reply = ""
-            elif emotion == "sad":
+            elif emotion == "Sad":
                 reply = ""
             else:
                 reply = ""
@@ -152,7 +152,7 @@ class Result():
         elif question == "":
             if emotion == "Happy":
                 reply = ""
-            elif emotion == "sad":
+            elif emotion == "Sad":
                 reply = ""
             else:
                 reply = ""
@@ -160,7 +160,7 @@ class Result():
         elif question == "":
             if emotion == "Happy":
                 reply = ""
-            elif emotion == "sad":
+            elif emotion == "Sad":
                 reply = ""
             else:
                 reply = ""
@@ -168,7 +168,7 @@ class Result():
         elif question == "":
             if emotion == "Happy":
                 reply = ""
-            elif emotion == "sad":
+            elif emotion == "Sad":
                 reply = ""
             else:
                 reply = ""
@@ -176,7 +176,7 @@ class Result():
         elif question == "":
             if emotion == "Happy":
                 reply = ""
-            elif emotion == "sad":
+            elif emotion == "Sad":
                 reply = ""
             else:
                 reply = ""
