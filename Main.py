@@ -377,8 +377,8 @@ def Predict():
     return Predictions(audio_predictions[0], image_predictions[0])
 
 def Test():
-    # Photo_taker(tk.Tk(),'Take Photo', True)
-    # Audio_recorder(tk.Tk(), 'Audio Recorder', True)
+    # Photo_taker(tk.Tk(),'Take Photo', 1, True)
+    # Audio_recorder(tk.Tk(), 'Audio Recorder', 1, True)
     # Preprocess(True)
     # Process("App_Data/Test/Preprocessed/Audio/test.wav", "App_Data/Test/Preprocessed/Image/test.jpg", "JSON_files/TestData.json", True)
     audio_result, image_result, combined_result = Predict()
@@ -387,20 +387,19 @@ def Test():
         Test()
 
 if __name__ == "__main__":
-    sample_num = str(Start(tk.Tk(), 'Emotion Chatbot'))
-    Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_num, int(sample_num), False)
-    Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_num), False)
-    Preprocess(False)
+    # sample_num = str(Start(tk.Tk(), 'Emotion Chatbot'))
+    # Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_num, int(sample_num), False)
+    # Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_num), False)
+    # Preprocess(False)
     # Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
     # Train_models("JSON_files/TrainData.json", 48)
-    # Test()
+    Test()
 
 
     #? if augmented data doesnt equal 110 then limit to smallest dataset
-    #* chnage in process section to find smallest dataset then limit to that
-    #? Allow user to choose number of samples they take
-    #* each storage needs to be clear because sample amounts could be different each time
+    #* change in process section to find smallest dataset then limit to that
     #TODO finish bot questions
+    #TODO show questions that can be asked on test audio window
+    #* remove re-take on test audio/pic windows
     #TODO create a training enviroment to train the model on around 300 samples find best model for task (Compare MLP, CNN, other)
     #TODO create junit tests
-    #! add play bot reply button if clicked again dont reprocess just play audio clip

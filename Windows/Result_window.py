@@ -5,6 +5,7 @@ from pydub.playback import play
 import speech_recognition as sr
 from gtts import gTTS
 from playsound import playsound
+import os
 
 class Result():
     def __init__(self, window, audio_results, image_results, combined_results, pos=0, again="n"):
@@ -19,6 +20,8 @@ class Result():
         self.com_r = combined_results
         self.pos = pos
         self.again = again
+        self.processed_question = False
+        self.question = ""
 
         # Image
         self.canv = tk.Canvas(master=self.root)
@@ -39,8 +42,6 @@ class Result():
         self.nextB.place(x=550, y=530)
         self.backB = tk.Button(self.root, font="arial 20", text="Back",bg="#111111",fg="white",border=0,command=self.back)
         self.backB.place(x=15, y=530)
-        self.againB = tk.Button(self.root, font="arial 20", text="Again",bg="#C1E1C1",fg="black",border=0,command=self.test_again)
-        self.againB.place(x=640, y=600)
         self.answerB = tk.Button(self.root, font="arial 20", text="Answer Question",bg="#A7C7E7",fg="black",border=0,command=self.answer)
         self.answerB.place(x=205, y=530)
 
@@ -71,6 +72,7 @@ class Result():
 
     def test_again(self):
         self.again = "y"
+        os.remove("Chatbot/bot_reply.mp3")
         self.root.destroy()
     
     def play_sample(self):
@@ -99,94 +101,97 @@ class Result():
             result += "Sad" #! Sad biast
         return result
 
-    def Get_reply(self, question, emotion):
-        reply = ""
-        if question == "can you help me":
-            if emotion == "Happy":
-                reply = "Yes, i'm always in the mood to help you"
-            elif emotion == "Sad":
-                reply = "Are you alright, what do you need?"
-            else:
-                reply = "What do you need?"
+    def get_reply(self):
+        question = self.question 
+        emotion = self.emotion(self.com_r[0], self.com_r[1], self.com_r[2])
+        if not self.processed_question:
+            reply = ""
+            if question == "can you help me":
+                if emotion == "Happy":
+                    reply = "Yes, i'm always in the mood to help you"
+                elif emotion == "Sad":
+                    reply = "Are you alright, what do you need?"
+                else:
+                    reply = "What do you need?"
 
-        elif question == "what is the weather today":
-            if emotion == "Happy":
-                reply = "The weather is like your mood sunny with a high of 12 degrees"
-            elif emotion == "Sad":
-                reply = "Hopefully your mood will be lifted as its sunny todays with a high of 12 degrees."
-            else:
-                reply = "It looks to be sunny with a high of 12 degrees."
+            elif question == "what is the weather today":
+                if emotion == "Happy":
+                    reply = "The weather is like your mood sunny with a high of 12 degrees"
+                elif emotion == "Sad":
+                    reply = "Hopefully your mood will be lifted as its sunny todays with a high of 12 degrees."
+                else:
+                    reply = "It looks to be sunny with a high of 12 degrees."
 
-        elif question == "take me home":
-            if emotion == "Happy":
-                reply = "Of course finding the best routes for you to get home."
-            elif emotion == "sad":
-                reply = ""
-            else:
-                reply = ""
+            elif question == "take me home":
+                if emotion == "Happy":
+                    reply = "Of course finding the best routes for you to get home."
+                elif emotion == "sad":
+                    reply = ""
+                else:
+                    reply = ""
 
-        elif question == "":
-            if emotion == "Happy":
-                reply = ""
-            elif emotion == "Sad":
-                reply = ""
-            else:
-                reply = ""
+            elif question == "":
+                if emotion == "Happy":
+                    reply = ""
+                elif emotion == "Sad":
+                    reply = ""
+                else:
+                    reply = ""
 
-        elif question == "":
-            if emotion == "Happy":
-                reply = ""
-            elif emotion == "Sad":
-                reply = ""
-            else:
-                reply = ""
+            elif question == "":
+                if emotion == "Happy":
+                    reply = ""
+                elif emotion == "Sad":
+                    reply = ""
+                else:
+                    reply = ""
 
-        elif question == "":
-            if emotion == "Happy":
-                reply = ""
-            elif emotion == "Sad":
-                reply = ""
-            else:
-                reply = ""
+            elif question == "":
+                if emotion == "Happy":
+                    reply = ""
+                elif emotion == "Sad":
+                    reply = ""
+                else:
+                    reply = ""
 
-        elif question == "":
-            if emotion == "Happy":
-                reply = ""
-            elif emotion == "Sad":
-                reply = ""
-            else:
-                reply = ""
+            elif question == "":
+                if emotion == "Happy":
+                    reply = ""
+                elif emotion == "Sad":
+                    reply = ""
+                else:
+                    reply = ""
 
-        elif question == "":
-            if emotion == "Happy":
-                reply = ""
-            elif emotion == "Sad":
-                reply = ""
-            else:
-                reply = ""
-                
-        elif question == "":
-            if emotion == "Happy":
-                reply = ""
-            elif emotion == "Sad":
-                reply = ""
-            else:
-                reply = ""
+            elif question == "":
+                if emotion == "Happy":
+                    reply = ""
+                elif emotion == "Sad":
+                    reply = ""
+                else:
+                    reply = ""
+                    
+            elif question == "":
+                if emotion == "Happy":
+                    reply = ""
+                elif emotion == "Sad":
+                    reply = ""
+                else:
+                    reply = ""
 
-        elif question == "":
-            if emotion == "Happy":
-                reply = ""
-            elif emotion == "Sad":
-                reply = ""
+            elif question == "":
+                if emotion == "Happy":
+                    reply = ""
+                elif emotion == "Sad":
+                    reply = ""
+                else:
+                    reply = ""
             else:
-                reply = ""
-        else:
-            reply = "Unable to match your question. Try again."
-    
-        bot_reply = gTTS(text=reply, lang="en", slow=False)
-
-        bot_reply.save("Chatbot/bot_reply.mp3")
+                reply = "Unable to match your question. Try again."
         
+            bot_reply = gTTS(text=reply, lang="en", slow=False)
+
+            bot_reply.save("Chatbot/bot_reply.mp3")
+            self.processed_question = True
         playsound("Chatbot/bot_reply.mp3")
     
     def Chatbot(self):
@@ -195,15 +200,17 @@ class Result():
         with sr.AudioFile("App_Data/Test/Preprocessed/Audio/test.wav") as source:
             audio = r.record(source)
         try:
-            question = r.recognize_google(audio)
-            tk.Label(text="You asked: "+question, font="arial 20",width=40,background="#4a4a4a",fg="white").place(x=0, y=150)
+            self.question = r.recognize_google(audio)
+            tk.Label(text="You asked: "+self.question, font="arial 20",width=40,background="#4a4a4a",fg="white").place(x=0, y=150)
         except Exception as e:
             print("Exception: "+str(e))
 
         tk.Label(text="Chatbot should reply based on your question and emotion.", font="arial 15",width=58,background="#4a4a4a",fg="#98FB98").place(x=0, y=230)
         tk.Label(text="Turn sound on to hear reply!", font="arial 12",width=70,background="#4a4a4a",fg="#98FB98").place(x=0, y=280)
 
-        self.Get_reply(question, self.emotion(self.com_r[0], self.com_r[1], self.com_r[2]))
+        # Button
+        self.playB = tk.Button(self.root, font="arial 20", text="Play",bg="#DC143C",fg="white",border=0,command=self.get_reply).place(x=285, y=330)
+        self.againB = tk.Button(self.root, font="arial 20", text="Again",bg="#C1E1C1",fg="black",border=0,command=self.test_again).place(x=280, y=530)
 
     def Clear(self):
         self.canv.place(x=640, y=600)
@@ -246,7 +253,6 @@ class Result():
 
         elif self.pos == -1:
             self.Clear()
-            self.againB.place(x=280, y=530)
             self.answerB.place(x=640, y=600)
             self.label1.place(x=640, y=600)
             self.label2.place(x=640, y=600)
