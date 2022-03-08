@@ -3,14 +3,16 @@ import cv2
 import PIL.Image, PIL.ImageTk
 import argparse
 import dlib
+import os
 
 '''
 Tkinter window which can be used to view, take and store pictures.
 '''
 class Photo_taker():
-    def __init__(self, window, window_title, test_set, video_source=0, pos=0, taken=0, ok=False):
+    def __init__(self, window, window_title, samples_num, test_set, video_source=0, pos=0, taken=0, ok=False):
         self.root = window
         self.root.title(window_title)
+        self.sample_num = samples_num
         self.test_set = test_set
         self.video_source = video_source
         self.pos = pos
@@ -19,6 +21,10 @@ class Photo_taker():
 
         self.root.configure(background="#4a4a4a")
         self.root.geometry("640x600")
+
+        # path
+        self.path = "App_Data/Training/Raw/Image/"
+        self.list_of_dir = ["Happy", "Neutral", "Sad"]
 
         # open video source (by default this will try to open the computer webcam)
         self.vid = VideoCapture(self.video_source)
@@ -39,16 +45,26 @@ class Photo_taker():
         # Redo button
         self.btn_retake=tk.Button(self.root, font="arial 20", text="Re-take", bg="#111111", fg="white", border=0, command=self.retake)
 
+        # Initial clear
+        self.clear(self.path)
+
         # After it is called once, the update method will be automatically called every delay milliseconds
         self.delay=10
         self.update()
 
         self.root.mainloop()
     
+    # Clear old data
+    def clear(self, path):
+        for dir in self.list_of_dir:
+            for i, (dirpath, dirnames, filenames) in enumerate(os.walk(path+dir)):
+                for f in filenames:
+                    os.remove(os.path.join(dirpath, f))
+    
     # Take photo again
     def retake(self):
         if self.taken > 0:
-            if self.taken%10 == 0:
+            if self.taken%self.sample_num == 0:
                 self.pos -=1
             self.taken -= 1
             self.update_title()
@@ -87,27 +103,27 @@ class Photo_taker():
                         self.root.destroy()
             # Training data
             else:
-                if self.taken < 10:
-                    cv2.imwrite("App_Data/Training/Raw/Image/Happy/"+str(self.taken)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
-                    if self.check_face("App_Data/Training/Raw/Image/Happy/"+str(self.taken)+".jpg"):
+                if self.taken < self.sample_num:
+                    cv2.imwrite(self.path+self.list_of_dir[0]+"/"+str(self.taken)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
+                    if self.check_face(self.path+self.list_of_dir[0]+"/"+str(self.taken)+".jpg"):
                         self.retake()
                     self.taken +=1
-                    if self.taken == 10:
+                    if self.taken == self.sample_num:
                         self.pos =1
-                elif self.taken >= 10 and self.taken < 20:
-                    cv2.imwrite("App_Data/Training/Raw/Image/Neutral/"+str(self.taken-10)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
-                    if self.check_face("App_Data/Training/Raw/Image/Neutral/"+str(self.taken-10)+".jpg"):
+                elif self.taken >= self.sample_num and self.taken < self.sample_num*2:
+                    cv2.imwrite(self.path+self.list_of_dir[1]+"/"+str(self.taken-self.sample_num)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
+                    if self.check_face(self.path+self.list_of_dir[1]+"/"+str(self.taken-self.sample_num)+".jpg"):
                         self.retake()
                     self.taken +=1
-                    if self.taken == 20:
+                    if self.taken == self.sample_num*2:
                         self.pos =2
-                elif self.taken >= 20 and self.taken < 30:
-                    cv2.imwrite("App_Data/Training/Raw/Image/Sad/"+str(self.taken-20)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
-                    if self.check_face("App_Data/Training/Raw/Image/Sad/"+str(self.taken-20)+".jpg"):
+                elif self.taken >= self.sample_num*2 and self.taken < self.sample_num*3:
+                    cv2.imwrite(self.path+self.list_of_dir[2]+"/"+str(self.taken-self.sample_num*2)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
+                    if self.check_face(self.path+self.list_of_dir[2]+"/"+str(self.taken-self.sample_num*2)+".jpg"):
                         self.retake()
                     self.taken +=1
                     # Finished
-                    if self.taken == 30:
+                    if self.taken == self.sample_num*3:
                         self.pos =3
                         self.root.destroy()
                 
@@ -116,12 +132,12 @@ class Photo_taker():
     # Update title
     def update_title(self):
         if self.pos == 0:
-            self.root.title('Take Happy Photo '+str(self.taken+1)+'/10')
+            self.root.title('Take Happy Photo '+str(self.taken+1)+'/'+str(self.sample_num))
         elif self.pos == 1:
-            self.root.title('Take Neutral Photo '+str(self.taken+1-10)+'/10')
+            self.root.title('Take Neutral Photo '+str(self.taken+1-self.sample_num)+'/'+str(self.sample_num))
             self.my_string_var.set("Take NEUTRAL photo make sure face is in the center")
         elif self.pos == 2:
-            self.root.title('Take Sad Photo '+str(self.taken+1-20)+'/10')
+            self.root.title('Take Sad Photo '+str(self.taken+1-self.sample_num*2)+'/'+str(self.sample_num))
             self.my_string_var.set("Take SAD photo make sure face is in the center")
         elif self.pos == 3:
             self.root.title('Done press x to move on!')

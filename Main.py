@@ -58,11 +58,19 @@ def augment_audio_data(path, aug_path):
         Shift(min_fraction=-0.5, max_fraction=0.5, p=0.5)
     ])
 
+    for i, (dirpath, dirnames, filenames) in enumerate(os.walk(aug_path+"Audio/")):
+        for f in filenames:
+            os.remove(os.path.join(dirpath, f))
+
     for i, (dirpath, dirnames, filenames) in enumerate(os.walk(path)):
         for f in filenames:
             signal, sr = librosa.load(os.path.join(dirpath, f))
             dirpath_components = dirpath.split("/")
             semantic_label = dirpath_components[-1]
+            # Save original
+            label = semantic_label + "/" + f
+            sf.write(os.path.join(aug_path, label), signal, sr)
+            # Save 10 aug
             for count in range(0, 10):
                 label = semantic_label + "/" + str(count) + "_" + f
                 augmented_signal = augment(signal, sr)
@@ -95,7 +103,7 @@ def augment_image_data(path, aug_path):
                 
             f_s = f.split(".")
             
-            for x, val in zip(datagen.flow(X, batch_size=5, save_to_dir=os.path.join(aug_path, semantic_label), save_prefix=f_s[0], save_format=f_s[1]),range(9)):     
+            for x, val in zip(datagen.flow(X, batch_size=2, save_to_dir=os.path.join(aug_path, semantic_label), save_prefix=f_s[0], save_format=f_s[1]),range(9)):     
                 pass
 
 # Process audio and image data - store in data.json file
@@ -217,10 +225,10 @@ def Preprocess(test):
     if test:
         crop_faces('App_Data/Test/Raw/Image', 'App_Data/Test/Preprocessed/', False)
     else:
-        augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
+        # augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
         augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
-        crop_faces('App_Data/Training/Augmented/Image', 'App_Data/Training/Preprocessed/', True)
-        crop_faces('App_Data/Training/Raw/Image', 'App_Data/Training/Preprocessed/', False)
+        # crop_faces('App_Data/Training/Augmented/Image', 'App_Data/Training/Preprocessed/', True)
+        # crop_faces('App_Data/Training/Raw/Image', 'App_Data/Training/Preprocessed/', False)
 
 def Train_models(DATA_PATH, IMG_SIZE):
 
@@ -368,15 +376,6 @@ def Predict():
 
     return Predictions(audio_predictions[0], image_predictions[0])
 
-def get_num_of_samples():
-    wrong = True
-
-    while wrong:
-        numberOfSamples = int(input("how many samples do you want to take out of 2-10: "))
-        if (numberOfSamples > 1 and numberOfSamples < 11):
-            wrong = False
-    return numberOfSamples
-
 def Test():
     # Photo_taker(tk.Tk(),'Take Photo', True)
     # Audio_recorder(tk.Tk(), 'Audio Recorder', True)
@@ -388,19 +387,20 @@ def Test():
         Test()
 
 if __name__ == "__main__":
-    sample_num = get_num_of_samples()
-    # Start(tk.Tk(), 'Emotion Chatbot')
-    # Photo_taker(tk.Tk(),'Take Happy Photo 1/10', False)
-    # Audio_recorder(tk.Tk(), 'Audio Recorder', False)
-    # Preprocess(False)
+    sample_num = str(Start(tk.Tk(), 'Emotion Chatbot'))
+    Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_num, int(sample_num), False)
+    Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_num), False)
+    Preprocess(False)
     # Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
     # Train_models("JSON_files/TrainData.json", 48)
     # Test()
 
 
     #? if augmented data doesnt equal 110 then limit to smallest dataset
+    #* chnage in process section to find smallest dataset then limit to that
     #? Allow user to choose number of samples they take
-    #? Have a test set mode
+    #* each storage needs to be clear because sample amounts could be different each time
+    #TODO finish bot questions
     #TODO create a training enviroment to train the model on around 300 samples find best model for task (Compare MLP, CNN, other)
     #TODO create junit tests
     #! add play bot reply button if clicked again dont reprocess just play audio clip
