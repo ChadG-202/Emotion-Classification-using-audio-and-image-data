@@ -111,7 +111,7 @@ class Result():
 
         elif question == "what is the weather today":
             if emotion == "Happy":
-                reply = "The weather is like your mood sunny wiht a high of 12 degrees"
+                reply = "The weather is like your mood sunny with a high of 12 degrees"
             elif emotion == "Sad":
                 reply = "Hopefully your mood will be lifted as its sunny todays with a high of 12 degrees."
             else:

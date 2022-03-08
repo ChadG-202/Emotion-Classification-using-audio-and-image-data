@@ -368,6 +368,15 @@ def Predict():
 
     return Predictions(audio_predictions[0], image_predictions[0])
 
+def get_num_of_samples():
+    wrong = True
+
+    while wrong:
+        numberOfSamples = int(input("how many samples do you want to take out of 2-10: "))
+        if (numberOfSamples > 1 and numberOfSamples < 11):
+            wrong = False
+    return numberOfSamples
+
 def Test():
     # Photo_taker(tk.Tk(),'Take Photo', True)
     # Audio_recorder(tk.Tk(), 'Audio Recorder', True)
@@ -379,19 +388,19 @@ def Test():
         Test()
 
 if __name__ == "__main__":
+    sample_num = get_num_of_samples()
     # Start(tk.Tk(), 'Emotion Chatbot')
     # Photo_taker(tk.Tk(),'Take Happy Photo 1/10', False)
     # Audio_recorder(tk.Tk(), 'Audio Recorder', False)
     # Preprocess(False)
     # Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
     # Train_models("JSON_files/TrainData.json", 48)
-    Test()
+    # Test()
 
 
     #? if augmented data doesnt equal 110 then limit to smallest dataset
     #? Allow user to choose number of samples they take
     #? Have a test set mode
-    #TODO create a chatbot to reply
     #TODO create a training enviroment to train the model on around 300 samples find best model for task (Compare MLP, CNN, other)
     #TODO create junit tests
     #! add play bot reply button if clicked again dont reprocess just play audio clip
