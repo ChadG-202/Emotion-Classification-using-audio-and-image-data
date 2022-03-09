@@ -155,8 +155,12 @@ class Photo_taker():
             self.canvas.create_image(0, 0, image = self.photo, anchor = tk.NW)
             self.photo_description.place(x=150, y=485)
             self.photo_description2.place(x=165, y=505)
-            self.btn_snapshot.place(x=330, y=540)
-            self.btn_retake.place(x=200, y=540)
+            if self.test_set:
+                self.btn_retake.place(x=640, y=600)
+                self.btn_snapshot.place(x=265, y=540)
+            else:
+                self.btn_retake.place(x=200, y=540)
+                self.btn_snapshot.place(x=330, y=540)
         self.root.after(self.delay,self.update)
 
 '''

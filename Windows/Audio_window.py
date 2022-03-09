@@ -1,4 +1,3 @@
-import random
 import pyaudio
 import wave
 from pydub import AudioSegment
@@ -28,7 +27,6 @@ class Audio_recorder:
         self.path = "App_Data/Training/Raw/Audio/"
         self.list_of_dir = ["Happy", "Neutral", "Sad"]
 
-
         #Logo
         self.photo=tk.PhotoImage(file="App_Images/rec-button.png")
         self.myimage=tk.Label(image=self.photo,background="#4a4a4a")
@@ -39,7 +37,8 @@ class Audio_recorder:
 
         #Button
         self.record = tk.Button(self.root, font="arial 20", text="Record",bg="#C1E1C1",fg="black",border=0,command=self.Record).pack(pady=20)
-        self.btn_retake=tk.Button(self.root, font="arial 20", text="Re-take", bg="#111111", fg="white", border=0, command=self.retake).pack(pady=10)
+        if not self.test_set:
+            self.btn_retake=tk.Button(self.root, font="arial 20", text="Re-take", bg="#111111", fg="white", border=0, command=self.retake).pack(pady=10)
 
         # Initial clear
         self.clear(self.path)
@@ -133,9 +132,10 @@ class Audio_recorder:
 
         if self.test_set:
             if self.pos < 1:
-                sen = random.randint(0, 9)
-                text = "Say the phrase: "+questions[sen]+" in chosen emotion."
-                tk.Label(text=f"{text}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=45, y=450)
+                text = "Choose one question below to ask the bot.\n"
+                for i in range(0, 9, 2):
+                    text += questions[i]+", "+questions[i+1]+",\n"
+                tk.Label(text=f"{text}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=45, y=340)
             else:
                 self.root.destroy()
         else:
@@ -147,7 +147,7 @@ class Audio_recorder:
                 self.emotion = self.list_of_dir[2]
 
             if self.pos < self.sample_num*3:
-                ask = "Say the phrase: "+questions[tempPos]+" in a "+self.emotion+" voice."
+                ask = "Say the question: "+questions[tempPos]+" in a "+self.emotion+" voice."
                 tk.Label(text=f"{ask}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=45, y=450)
                 position = self.emotion+": "+str(tempPos+1)+"/"+str(self.sample_num)
                 tk.Label(text=f"{position}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=45, y=480)

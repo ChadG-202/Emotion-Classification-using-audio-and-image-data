@@ -6,6 +6,7 @@ import speech_recognition as sr
 from gtts import gTTS
 from playsound import playsound
 import os
+import datetime
 
 class Result():
     def __init__(self, window, audio_results, image_results, combined_results, pos=0, again="n"):
@@ -122,31 +123,32 @@ class Result():
                 else:
                     reply = "It looks to be sunny with a high of 12 degrees."
 
-            elif question == "take me home":
+            elif question == "can you find me routes home":
                 if emotion == "Happy":
-                    reply = "Of course finding the best routes for you to get home."
+                    reply = "Of course finding the best possible routes for you to get home."
                 elif emotion == "sad":
-                    reply = ""
+                    reply = "Working as quick as possible to find you routes home. If you are lost or in danger just ask me to call emergency serices."
                 else:
-                    reply = ""
+                    reply = "Finding routes to home."
 
-            elif question == "":
+            elif question == "whats there to watch on netflix":
                 if emotion == "Happy":
-                    reply = ""
+                    reply = "The comedy meet the parents is currently on netflix. Would you like me to play it?"
                 elif emotion == "Sad":
-                    reply = ""
+                    reply = "I suggest the fault in our stars. Would you like me to play it?"
                 else:
-                    reply = ""
+                    reply = "There is a range of movies from the hustle, king kong and justice league. Would you like me to open the app so you can decide?"
 
-            elif question == "":
+            elif question == "what time is it":
                 if emotion == "Happy":
-                    reply = ""
+                    reply = "It's {} {} I hope you remain this happy for the rest of the day.".format(str(currentDT.hour), str(currentDT.minute))
                 elif emotion == "Sad":
-                    reply = ""
+                    currentDT = datetime.datetime.now()
+                    reply = "I'm sure you can make it on time its {} {}.".format(str(currentDT.hour), str(currentDT.minute))
                 else:
-                    reply = ""
+                    reply = "It is {} {}.".format(str(currentDT.hour), str(currentDT.minute))
 
-            elif question == "":
+            elif question == "":#! finish
                 if emotion == "Happy":
                     reply = ""
                 elif emotion == "Sad":

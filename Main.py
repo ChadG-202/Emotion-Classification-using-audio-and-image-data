@@ -1,5 +1,6 @@
 import json
 import math
+from re import L
 import tensorflow as tf
 import tensorflow.keras as keras
 import numpy as np
@@ -78,7 +79,7 @@ def augment_audio_data(path, aug_path):
 
 def augment_image_data(path, aug_path):
     datagen = ImageDataGenerator(rescale=1./255,
-        rotation_range=15,
+        rotation_range=10,
         zoom_range=0.1,
         width_shift_range=0.1,
         height_shift_range=0.1,
@@ -106,12 +107,25 @@ def augment_image_data(path, aug_path):
             for x, val in zip(datagen.flow(X, batch_size=2, save_to_dir=os.path.join(aug_path, semantic_label), save_prefix=f_s[0], save_format=f_s[1]),range(9)):     
                 pass
 
+def find_smallest_dataset(path):
+    dir_list = ["/Happy", "/Neutral", "/Sad"]
+    smallest_size = 0
+    for dir in dir_list:
+        size = sum(len(files) for _, _, files in os.walk(path+dir))
+        if smallest_size == 0:
+            smallest_size = size
+        elif smallest_size > size:
+            smallest_size = size
+    return smallest_size
+
 # Process audio and image data - store in data.json file
 def Process(audio_path, image_path, json_path, test, n_mfcc=13, n_fft=2048, hop_length=512, num_segments=1):
     SAMPLE_RATE = 22050
     DURATION = 4
     SAMPLES_PER_TRACK = SAMPLE_RATE * DURATION
     IMG_SIZE = 48
+
+    dataset_size = find_smallest_dataset(image_path)
 
     if test:
         data = {
@@ -168,7 +182,7 @@ def Process(audio_path, image_path, json_path, test, n_mfcc=13, n_fft=2048, hop_
                 
                 print("\nProcessing {}".format(semantic_label))
                 
-                for f in filenames:
+                for f in filenames[:dataset_size]:
                     try:
                         file_path = os.path.join(dirpath, f)
                         signal, sr = librosa.load(file_path, sr=SAMPLE_RATE)
@@ -205,7 +219,7 @@ def Process(audio_path, image_path, json_path, test, n_mfcc=13, n_fft=2048, hop_
                 
                 print("\nProcessing {}".format(semantic_label))
                 
-                for f in filenames:
+                for f in filenames[:dataset_size]:
                     file_path = os.path.join(dirpath, f)
                     try:
                         # process image
@@ -225,10 +239,10 @@ def Preprocess(test):
     if test:
         crop_faces('App_Data/Test/Raw/Image', 'App_Data/Test/Preprocessed/', False)
     else:
-        # augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
+        augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
         augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
-        # crop_faces('App_Data/Training/Augmented/Image', 'App_Data/Training/Preprocessed/', True)
-        # crop_faces('App_Data/Training/Raw/Image', 'App_Data/Training/Preprocessed/', False)
+        crop_faces('App_Data/Training/Augmented/Image', 'App_Data/Training/Preprocessed/', True)
+        crop_faces('App_Data/Training/Raw/Image', 'App_Data/Training/Preprocessed/', False)
 
 def Train_models(DATA_PATH, IMG_SIZE):
 
@@ -378,7 +392,7 @@ def Predict():
 
 def Test():
     # Photo_taker(tk.Tk(),'Take Photo', 1, True)
-    # Audio_recorder(tk.Tk(), 'Audio Recorder', 1, True)
+    Audio_recorder(tk.Tk(), 'Audio Recorder', 1, True)
     # Preprocess(True)
     # Process("App_Data/Test/Preprocessed/Audio/test.wav", "App_Data/Test/Preprocessed/Image/test.jpg", "JSON_files/TestData.json", True)
     audio_result, image_result, combined_result = Predict()
@@ -396,10 +410,7 @@ if __name__ == "__main__":
     Test()
 
 
-    #? if augmented data doesnt equal 110 then limit to smallest dataset
-    #* change in process section to find smallest dataset then limit to that
     #TODO finish bot questions
-    #TODO show questions that can be asked on test audio window
-    #* remove re-take on test audio/pic windows
-    #TODO create a training enviroment to train the model on around 300 samples find best model for task (Compare MLP, CNN, other)
+    #TODO create a training enviroment to train the model on around 300 samples find best model for task (Compare CNN, other)
     #TODO create junit tests
+    #TODO comment code
