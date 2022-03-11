@@ -123,10 +123,10 @@ class Audio_recorder:
         self.Recording(self.emotion, str(self.pos))
     
     def sentence(self):
-        questions = ["'Can you help me?'", "'Who are you?'",
-        "'Where am I?'", "'Why is this happening?'", "'What time is it?'", 
-        "'Take me home?'", "'Whats the weather today?'", "'Set a timer for 10 minutes?'",
-        "'How do you spell tree?'", "'Whats 10 + 20?'"]
+        questions = ["'Can you help me?'", "'What is the weather today?'",
+        "'Can you find me a route home?'", "'What is there to watch on Netflix?'", "'What time is it?'", 
+        "'Can you turn the light on?'", "'What song is this?'", "'Who am i?'",
+        "'Are unicorns real?'", "'How do you spell tree?'"]
 
         tempPos = self.pos
 

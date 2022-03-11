@@ -123,7 +123,7 @@ class Result():
                 else:
                     reply = "It looks to be sunny with a high of 12 degrees."
 
-            elif question == "can you find me routes home":
+            elif question == "can you find me a route home":
                 if emotion == "Happy":
                     reply = "Of course finding the best possible routes for you to get home."
                 elif emotion == "sad":
@@ -131,7 +131,7 @@ class Result():
                 else:
                     reply = "Finding routes to home."
 
-            elif question == "whats there to watch on netflix":
+            elif question == "what is there to watch on Netflix":
                 if emotion == "Happy":
                     reply = "The comedy meet the parents is currently on netflix. Would you like me to play it?"
                 elif emotion == "Sad":
@@ -148,45 +148,45 @@ class Result():
                 else:
                     reply = "It is {} {}.".format(str(currentDT.hour), str(currentDT.minute))
 
-            elif question == "":#! finish
+            elif question == "can you turn the light on":
                 if emotion == "Happy":
-                    reply = ""
+                    reply = "Let match this room to your mood, turning the light on."
                 elif emotion == "Sad":
-                    reply = ""
+                    reply = "Of course, hopefully this can lighten your day."
                 else:
-                    reply = ""
+                    reply = "Turning the light on."
 
-            elif question == "":
+            elif question == "what song is this":
                 if emotion == "Happy":
-                    reply = ""
+                    reply = "This feature doesnt exist, we know you want this feature so we are working our best to get it to you."
                 elif emotion == "Sad":
-                    reply = ""
+                    reply = "I'm sorry but this feature cannot yet be used. We are working hard to get it implimented."
                 else:
-                    reply = ""
+                    reply = "This feature does not yet exist."
 
-            elif question == "":
+            elif question == "who am i":
                 if emotion == "Happy":
-                    reply = ""
+                    reply = "You are warm, pleasant human being"
                 elif emotion == "Sad":
-                    reply = ""
+                    reply = "Don't be upset, you are an amazing human being"
                 else:
-                    reply = ""
+                    reply = "you are a human being"
                     
-            elif question == "":
+            elif question == "are unicorns real":
                 if emotion == "Happy":
-                    reply = ""
+                    reply = "Of course unicorns are real."
                 elif emotion == "Sad":
-                    reply = ""
+                    reply = "Don't be sad, there's no evidence to suggest unicorns dont exist."
                 else:
-                    reply = ""
+                    reply = "There is currently no evidence of the existence of unicorns."
 
-            elif question == "":
+            elif question == "how do you spell tree":
                 if emotion == "Happy":
-                    reply = ""
+                    reply = "Good question, tree is spelt t r e e."
                 elif emotion == "Sad":
-                    reply = ""
+                    reply = "It's okay im here to help with your spelling, tree is splet t r e e."
                 else:
-                    reply = ""
+                    reply = "Tree is spelt t r e e"
             else:
                 reply = "Unable to match your question. Try again."
         

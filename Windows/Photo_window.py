@@ -31,7 +31,10 @@ class Photo_taker():
 
         # Label description
         self.my_string_var = tk.StringVar()
-        self.my_string_var.set("Take HAPPY photo make sure face is in the center")
+        if self.test_set:
+            self.my_string_var.set("Take a photo make sure face is in the center")
+        else:
+            self.my_string_var.set("Take HAPPY photo make sure face is in the center")
         self.photo_description=tk.Label(textvariable=self.my_string_var, font="arial 12 bold", background="#4a4a4a", fg="white")
         self.photo_description2=tk.Label(text="of the camera and that both eyes can be seen.", font="arial 12 bold", background="#4a4a4a", fg="white")
 

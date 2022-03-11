@@ -391,10 +391,10 @@ def Predict():
     return Predictions(audio_predictions[0], image_predictions[0])
 
 def Test():
-    # Photo_taker(tk.Tk(),'Take Photo', 1, True)
+    Photo_taker(tk.Tk(),'Take Photo', 1, True)
     Audio_recorder(tk.Tk(), 'Audio Recorder', 1, True)
-    # Preprocess(True)
-    # Process("App_Data/Test/Preprocessed/Audio/test.wav", "App_Data/Test/Preprocessed/Image/test.jpg", "JSON_files/TestData.json", True)
+    Preprocess(True)
+    Process("App_Data/Test/Preprocessed/Audio/test.wav", "App_Data/Test/Preprocessed/Image/test.jpg", "JSON_files/TestData.json", True)
     audio_result, image_result, combined_result = Predict()
     again = Result(tk.Tk(), audio_result, image_result, combined_result)
     if str(again) == "y":
@@ -409,8 +409,7 @@ if __name__ == "__main__":
     # Train_models("JSON_files/TrainData.json", 48)
     Test()
 
-
-    #TODO finish bot questions
+    #TODO make text on screen fit
+    #TODO comment code
     #TODO create a training enviroment to train the model on around 300 samples find best model for task (Compare CNN, other)
     #TODO create junit tests
-    #TODO comment code
