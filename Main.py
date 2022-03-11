@@ -408,8 +408,7 @@ if __name__ == "__main__":
     # Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
     # Train_models("JSON_files/TrainData.json", 48)
     Test()
-
-    #TODO make text on screen fit
+    
     #TODO comment code
     #TODO create a training enviroment to train the model on around 300 samples find best model for task (Compare CNN, other)
     #TODO create junit tests

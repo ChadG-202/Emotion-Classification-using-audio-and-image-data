@@ -124,8 +124,9 @@ class Audio_recorder:
     
     def sentence(self):
         questions = ["'Can you help me?'", "'What is the weather today?'",
-        "'Can you find me a route home?'", "'What is there to watch on Netflix?'", "'What time is it?'", 
-        "'Can you turn the light on?'", "'What song is this?'", "'Who am i?'",
+        "'Can you find me a route home?'", "'What time is it?'", 
+        "'Can you turn the light on?'", "'What song is this?'", 
+        "'Who am i?'", "'What is there to watch on Netflix?'",
         "'Are unicorns real?'", "'How do you spell tree?'"]
 
         tempPos = self.pos
