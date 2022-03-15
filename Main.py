@@ -410,6 +410,6 @@ if __name__ == "__main__":
     
     #TODO comment code
     #TODO try using threads
-    #TODO| Try using lambda
+    #TODO Try using lambda
     #TODO create a training enviroment to train the model on around 300 samples find best model for task (Compare CNN, other)
     #TODO create junit tests

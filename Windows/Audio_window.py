@@ -1,3 +1,4 @@
+import threading
 import pyaudio
 import wave
 from pydub import AudioSegment
@@ -98,23 +99,31 @@ class Audio_recorder:
         stream.close()
         p.terminate()
         
-        if self.test_set:
-            wf = wave.open("App_Data/Test/Preprocessed/Audio/test.wav", 'wb')
-            wf.setnchannels(channels)
-            wf.setsampwidth(p.get_sample_size(pyaudio.paInt16))
-            wf.setframerate(rate)
-            wf.writeframes(b''.join(frames))
-            wf.close()
-        else:
-            wf = wave.open(self.path+type+"/"+pos+".wav", 'wb')
-            wf.setnchannels(channels)
-            wf.setsampwidth(p.get_sample_size(pyaudio.paInt16))
-            wf.setframerate(rate)
-            wf.writeframes(b''.join(frames))
-            wf.close()
+        def Save():
+            if self.test_set:
+                wf = wave.open("App_Data/Test/Preprocessed/Audio/test.wav", 'wb')
+                wf.setnchannels(channels)
+                wf.setsampwidth(p.get_sample_size(pyaudio.paInt16))
+                wf.setframerate(rate)
+                wf.writeframes(b''.join(frames))
+                wf.close()
+            else:
+                wf = wave.open(self.path+type+"/"+pos+".wav", 'wb')
+                wf.setnchannels(channels)
+                wf.setsampwidth(p.get_sample_size(pyaudio.paInt16))
+                wf.setframerate(rate)
+                wf.writeframes(b''.join(frames))
+                wf.close()
 
-            question = AudioSegment.from_wav(self.path+type+"/"+pos+".wav")
-            play(question)
+            try:
+                question = AudioSegment.from_wav(self.path+type+"/"+pos+".wav")
+                play(question)
+            except:
+                print("couldnt play")
+
+        
+        t1 = threading.Thread(target=Save)
+        t1.start()
 
         self.pos += 1
         self.sentence()
