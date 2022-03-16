@@ -1,3 +1,4 @@
+import threading
 from gtts import gTTS
 from PIL import ImageTk, Image
 from playsound import playsound
@@ -87,8 +88,11 @@ class Result():
     
     # Play audio
     def play_sample(self):
-        sample = AudioSegment.from_wav("App_Data/Test/Preprocessed/Audio/test.wav")
-        play(sample)
+        def playing():
+            sample = AudioSegment.from_wav("App_Data/Test/Preprocessed/Audio/test.wav")
+            play(sample)
+        t1 = threading.Thread(target=playing)
+        t1.start()
 
     # Set answer question state
     def answer(self):
@@ -214,6 +218,7 @@ class Result():
     def Chatbot(self):
         r = sr.Recognizer()
 
+        #! remove button and have threading to first load question then play reply, have appropriate text showing while its loading
         with sr.AudioFile("App_Data/Test/Preprocessed/Audio/test.wav") as source:
             audio = r.record(source)
         try:
