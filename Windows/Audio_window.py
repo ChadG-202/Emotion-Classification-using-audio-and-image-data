@@ -100,20 +100,18 @@ class Audio_recorder:
         p.terminate()
         
         def Save():
+            save_path = ""
             if self.test_set:
-                wf = wave.open("App_Data/Test/Preprocessed/Audio/test.wav", 'wb')
-                wf.setnchannels(channels)
-                wf.setsampwidth(p.get_sample_size(pyaudio.paInt16))
-                wf.setframerate(rate)
-                wf.writeframes(b''.join(frames))
-                wf.close()
+                save_path = "App_Data/Test/Preprocessed/Audio/test.wav"
             else:
-                wf = wave.open(self.path+type+"/"+pos+".wav", 'wb')
-                wf.setnchannels(channels)
-                wf.setsampwidth(p.get_sample_size(pyaudio.paInt16))
-                wf.setframerate(rate)
-                wf.writeframes(b''.join(frames))
-                wf.close()
+                save_path  = self.path+type+"/"+pos+".wav"
+
+            wf = wave.open(save_path, 'wb')
+            wf.setnchannels(channels)
+            wf.setsampwidth(p.get_sample_size(pyaudio.paInt16))
+            wf.setframerate(rate)
+            wf.writeframes(b''.join(frames))
+            wf.close()
 
             try:
                 question = AudioSegment.from_wav(self.path+type+"/"+pos+".wav")
@@ -144,7 +142,7 @@ class Audio_recorder:
             if self.pos < 1:
                 text = "Choose one question below to ask the bot.\n"
                 for i in range(0, 9, 2):
-                    text += questions[i]+", "+questions[i+1]+",\n"
+                    text += questions[i]+", "+questions[i+1]+"\n"
                 tk.Label(text=f"{text}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=45, y=340)
             else:
                 self.root.destroy()
@@ -157,9 +155,7 @@ class Audio_recorder:
                 self.emotion = self.list_of_dir[2]
 
             if self.pos < self.sample_num*3:
-                ask = "Say the question: "+questions[tempPos]+" in a "+self.emotion+" voice."
-                tk.Label(text=f"{ask}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=45, y=450)
-                position = self.emotion+": "+str(tempPos+1)+"/"+str(self.sample_num)
-                tk.Label(text=f"{position}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=45, y=480)
+                ask = "Say the question:\n"+questions[tempPos]+"\nin a "+self.emotion+" expression:\n"+str(tempPos+1)+"/"+str(self.sample_num)
+                tk.Label(text=f"{ask}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=45, y=415)
             else:
                 self.root.destroy()

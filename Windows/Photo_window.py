@@ -1,3 +1,4 @@
+import threading
 import tkinter as tk
 import cv2
 import PIL.Image, PIL.ImageTk
@@ -10,21 +11,21 @@ Tkinter window which can be used to view, take and store pictures.
 '''
 class Photo_taker():
     def __init__(self, window, window_title, samples_num, test_set, video_source=0, pos=0, taken=0, ok=False):
+        # Window global var
         self.root = window
         self.root.title(window_title)
-        self.sample_num = samples_num
-        self.test_set = test_set
-        self.video_source = video_source
-        self.pos = pos
-        self.taken = taken
+        self.sample_num = samples_num     # Number of samples to be taken
+        self.test_set = test_set          # Is this a test widnow?
+        self.video_source = video_source  
+        self.pos = pos                    # State of window
+        self.taken = taken                # Samples taken
         self.ok=ok
-
         self.root.configure(background="#4a4a4a")
         self.root.geometry("640x600")
 
         # path
-        self.path = "App_Data/Training/Raw/Image/"
-        self.list_of_dir = ["Happy", "Neutral", "Sad"]
+        self.path = "App_Data/Training/Raw/Image/"     # Path to store images
+        self.list_of_dir = ["Happy", "Neutral", "Sad"] # Directories avaliable
 
         # open video source (by default this will try to open the computer webcam)
         self.vid = VideoCapture(self.video_source)
@@ -32,11 +33,12 @@ class Photo_taker():
         # Label description
         self.my_string_var = tk.StringVar()
         if self.test_set:
-            self.my_string_var.set("Take a photo make sure face is in the center")
+            self.my_string_var.set("Take a photo make sure your face is in the center")
         else:
-            self.my_string_var.set("Take HAPPY photo make sure face is in the center")
+            self.my_string_var.set("Take a HAPPY photo, make sure your face is in the center")
+        # Screen text
         self.photo_description=tk.Label(textvariable=self.my_string_var, font="arial 12 bold", background="#4a4a4a", fg="white")
-        self.photo_description2=tk.Label(text="of the camera and that both eyes can be seen.", font="arial 12 bold", background="#4a4a4a", fg="white")
+        self.photo_description2=tk.Label(text="of the screen and that both eyes can be seen.", font="arial 12 bold", background="#4a4a4a", fg="white")
 
         # Create a canvas that can fit the above video source size
         self.canvas = tk.Canvas(self.root, width = self.vid.width, height = self.vid.height)
@@ -48,10 +50,10 @@ class Photo_taker():
         # Redo button
         self.btn_retake=tk.Button(self.root, font="arial 20", text="Re-take", bg="#111111", fg="white", border=0, command=self.retake)
 
-        # Initial clear
+        # Clear data from path to make room for new data
         self.clear(self.path)
 
-        # After it is called once, the update method will be automatically called every delay milliseconds
+        # After it is called once, the update method will be automatically called every 10 milliseconds
         self.delay=10
         self.update()
 
@@ -72,79 +74,83 @@ class Photo_taker():
             self.taken -= 1
             self.update_title()
 
-    # Make sure there is 1 face visible in photo
-    def check_face(self, path):
-        detector = dlib.get_frontal_face_detector()
-
-        frame =cv2.imread(path)
-        gray =cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
-        faces = detector(gray)
-
-        if len(faces) == 0:
-            print("No face found")
-            return True
-        elif len(faces) == 1:
-            return False
-        elif len(faces) > 1:
-            print("Too many faces")
-            return True
-
     # Take a photo and store in relevant folder
     def snapshot(self):
         # Get a frame from the video source
         ret,frame=self.vid.get_frame()
 
         if ret:
+            path = ""
+            sample_total = 0
+            # Save image
+            def save_image():
+                try:
+                    cv2.imwrite(path,cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
+                except:
+                    print("Folder does not exist")
+
+            # Make sure there is 1 face visible in photo
+            def check_face():
+                detector = dlib.get_frontal_face_detector()
+
+                frame =cv2.imread(path)
+                gray =cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+                faces = detector(gray)
+
+                if len(faces) == 0 or len(faces) > 1:
+                    print("No face found or too many faces")
+                    self.retake()
+
             # Test data
             if self.test_set:
                 if self.taken < 1:
-                    cv2.imwrite("App_Data/Test/Raw/Image/test.jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
-                    if self.check_face("App_Data/Test/Raw/Image/test.jpg"):
-                        self.retake()
-                    self.taken += 1
-                    if self.taken > 0:
-                        self.root.destroy()
-            # Training data
-            else:
+                    path = "App_Data/Test/Raw/Image/test.jpg"  
+            else: # Training data
                 if self.taken < self.sample_num:
-                    cv2.imwrite(self.path+self.list_of_dir[0]+"/"+str(self.taken)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
-                    if self.check_face(self.path+self.list_of_dir[0]+"/"+str(self.taken)+".jpg"):
-                        self.retake()
-                    self.taken +=1
-                    if self.taken == self.sample_num:
-                        self.pos =1
+                    path = self.path+self.list_of_dir[0]+"/"+str(self.taken)+".jpg"
+                    sample_total = self.sample_num
                 elif self.taken >= self.sample_num and self.taken < self.sample_num*2:
-                    cv2.imwrite(self.path+self.list_of_dir[1]+"/"+str(self.taken-self.sample_num)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
-                    if self.check_face(self.path+self.list_of_dir[1]+"/"+str(self.taken-self.sample_num)+".jpg"):
-                        self.retake()
-                    self.taken +=1
-                    if self.taken == self.sample_num*2:
-                        self.pos =2
+                    path = self.path+self.list_of_dir[1]+"/"+str(self.taken-self.sample_num)+".jpg"
+                    sample_total = self.sample_num*2
                 elif self.taken >= self.sample_num*2 and self.taken < self.sample_num*3:
-                    cv2.imwrite(self.path+self.list_of_dir[2]+"/"+str(self.taken-self.sample_num*2)+".jpg",cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
-                    if self.check_face(self.path+self.list_of_dir[2]+"/"+str(self.taken-self.sample_num*2)+".jpg"):
-                        self.retake()
-                    self.taken +=1
-                    # Finished
-                    if self.taken == self.sample_num*3:
-                        self.pos =3
-                        self.root.destroy()
+                    path = self.path+self.list_of_dir[2]+"/"+str(self.taken-self.sample_num*2)+".jpg"
+                    sample_total = self.sample_num*3
+
+            t1 = threading.Thread(target=save_image)
+            t2 = threading.Thread(target=check_face)
+            t1.start()
+            t2.start()
+            t1.join()
+            t2.join()
+
+            self.taken +=1
+
+            if self.test_set:
+                if self.taken > 0:
+                    self.root.destroy()
+            else:
+                if self.taken == sample_total:
+                    self.pos += 1
+                    if self.pos == 3:
+                        self.root.destroy() # Finished
                 
                 self.update_title()
 
     # Update title
     def update_title(self):
-        if self.pos == 0:
-            self.root.title('Take Happy Photo '+str(self.taken+1)+'/'+str(self.sample_num))
-        elif self.pos == 1:
-            self.root.title('Take Neutral Photo '+str(self.taken+1-self.sample_num)+'/'+str(self.sample_num))
-            self.my_string_var.set("Take NEUTRAL photo make sure face is in the center")
+        title = 'Take Happy Photo '+str(self.taken+1)+'/'+str(self.sample_num)
+        text = "Take a HAPPY photo, make sure your face is in the center"
+
+        if self.pos == 1:
+            title = 'Take Neutral Photo '+str(self.taken+1-self.sample_num)+'/'+str(self.sample_num)
+            text = "Take NEUTRAL photo make sure face is in the center"
         elif self.pos == 2:
-            self.root.title('Take Sad Photo '+str(self.taken+1-self.sample_num*2)+'/'+str(self.sample_num))
-            self.my_string_var.set("Take SAD photo make sure face is in the center")
-        elif self.pos == 3:
-            self.root.title('Done press x to move on!')
-    
+            title = 'Take Sad Photo '+str(self.taken+1-self.sample_num*2)+'/'+str(self.sample_num)
+            text = "Take SAD photo make sure face is in the center"
+        
+        self.root.title(title)
+        self.my_string_var.set(text)
+    #! got to
     # Update tkinter window
     def update(self):
         # Get a frame from the video source

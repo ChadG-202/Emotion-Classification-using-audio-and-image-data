@@ -1,22 +1,25 @@
 import tkinter as tk
 
-
+'''
+Tkinter window that explains how the program works.
+It also allows the user to input the number of samples
+to be taken.
+'''
 class Start():
     def __init__(self, window, window_title, pos=0, samples=10):
+        # Window global var
         self.root = window
         self.root.title(window_title)
-        self.pos = pos
-
+        self.pos = pos # State of the display
         self.root.geometry("640x600")
         self.root.resizable(False, False)
         self.root.configure(background="#4a4a4a")
+        self.samples = samples # Number of pictures/recordings to be taken
 
-        self.samples = samples
-
-        #Name
+        # Name
         tk.Label(text="Emotion Chatbot", font="arial 30 bold", background="#4a4a4a", fg="white").pack(pady=20)
 
-        #Button
+        # Buttons
         self.nextB = tk.Button(self.root, font="arial 20", text="Next",bg="#C1E1C1",fg="black",border=0,command=self.next)
         self.nextB.place(x=280, y=450)
         self.submitB = tk.Button(self.root, font="arial 20", text="Submit",bg="#FFFF00",fg="black",border=0,command=self.submit)
@@ -30,13 +33,14 @@ class Start():
         self.root.mainloop()
     
     def __repr__(self):
-        return str(self.samples)
+        return str(self.samples) # Return sample number
 
     def next(self):
-        self.pos += 1
+        self.pos += 1 # Increment screen state
         self.sentence()
 
     def submit(self):
+        # Submitting sample number
         try:
             self.samples = int(self.inputtxt.get(1.0, "end-1c"))
             if (self.samples > 1 and self.samples < 11):
@@ -47,22 +51,23 @@ class Start():
             tk.Label(text="Make sure you enter a number", font="arial 15",width=58,background="#DC143C",fg="white").place(x=0, y=520)
             
     def sentence(self):
+        # Screen text
         text = ""
         if self.pos == 0:
-            text += "This application uses image and audio data to predict your emotion.\n"
-            text += "It does this by gathering samples from you, these samples are then\n"
-            text += "agumented to create a larger set of data. This data is then used to\n"
+            text += "This application uses image and audio data to predict emotion.\n"
+            text += "It does this by gathering samples from you, these samples are\n"
+            text += "agumented to create a larger set of data. This data can be used to\n"
             text += "train two deep learing CNN models. The program will ask you to take\n"
             text += "one more photo and recording. This data will be passed through the\n"
-            text += "models provding a prediction surrounding your emotion. A chatbot will\n"
-            text += "reply to your question with consideration to the emotion predicted by\n"
+            text += "models providing a emotion prediction. The chatbot will then\n"
+            text += "reply to your question with consideration to the emotion found by\n"
             text += "the CNN model.\n"
         elif self.pos == 1:
-            text += "The photo application works by having you take 2-10 pictures of youself\n"
+            text += "The photo application works by taking 2-10 pictures of youself\n"
             text += "in a happy/neutral/sad expression. You will be told on screen which\n"
             text += "emotion to show. Each time you click 'snapshot' a photo will be\n"
-            text += "taken. Onces you have done 2-10 photos it will promote you with \n"
-            text += "the next emotiont. Make sure your face is in the cnter of the screen.\n"
+            text += "taken. Onces you have done 2-10 photos it will prompt you with \n"
+            text += "the next emotion. Make sure your face is in the center of the screen.\n"
             text += "Try moving your face slightly each time to provide a range of angles.\n"
             text += "Make sure both eyes are visible on screen. If you make a\n"
             text += "mistake you can always re-take by clicking the 're-take' button.\n"
@@ -78,14 +83,14 @@ class Start():
         elif self.pos == 3:
             text += "The application will then preprocess and process the data, before\n"
             text += "training. You will be promoted to take one more picture and one more\n"
-            text += " recording in a chosen emotion. This data will be predicted upon before a\n"
-            text += "results window shows you the emotion it has predicted and\n"
+            text += "recording in a chosen emotion. This data will be predicted upon\n"
+            text += "before the results window shows the emotion it has predicted and\n"
             text += "what percentage of confidence it has for the image, audio and combined\n"
-            text += "results. Pressing the 'Chatbot reply' button will take you to a page\n"
-            text += "where a reply can be played that should be directly\n"
-            text += "responsive to your emotion and question.\n"
+            text += "data. Pressing the 'Chatbot reply' button will allow you to\n"
+            text += "play the reply the chatbot has concluded best fits the situation, it\n"
+            text += "should be directly responsive to your emotion and question.\n"
         elif self.pos == 4:
-            text += "If you have trained the models, you can then continuously try asking\n"
+            text += "If you have trained the models, you can then continuously ask\n"
             text += "the chatbot new questions in different emotions by clicking the 'ask\n"
             text += "again' button, shown on the response page.\n"
             text += "\n"
@@ -99,5 +104,6 @@ class Start():
         else:
             self.root.destroy()
 
+        # Display text if in range of different states
         if self.pos < 5:
             tk.Label(text=f"{text}", font="arial 15",width=58,background="#4a4a4a",fg="white").place(x=0, y=150)
