@@ -1,21 +1,24 @@
-import json
-import math
-import tensorflow as tf
-import tensorflow.keras as keras
-import numpy as np
+from audiomentations import Compose, TimeStretch, Shift
+from keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
 from sklearn.model_selection import train_test_split
-from Windows.Result_window import Result
-from Windows.Start_window import Start
 from Windows.Audio_window import Audio_recorder
 from Windows.Photo_window import Photo_taker
-from audiomentations import Compose, AddGaussianNoise, PitchShift, TimeStretch, Shift
-import librosa
-import os
-import dlib
+from Windows.Result_window import Result
+from Windows.Start_window import Start
+
 import cv2
-import tkinter as tk
+import dlib
+import json
+import librosa
+import math
+import numpy as np
+import os
 import soundfile as sf
-from keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
+import tensorflow as tf
+import tkinter as tk
+import tensorflow.keras as keras
+
+
 
 
 def save_face(img,name, bbox, i, width=48,height=48):

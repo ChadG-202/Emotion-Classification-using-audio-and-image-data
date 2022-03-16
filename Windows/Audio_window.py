@@ -1,20 +1,26 @@
-import threading
-import pyaudio
-import wave
 from pydub import AudioSegment
 from pydub.playback import play
-import tkinter as tk
-import os
 
+import os
+import pyaudio
+import threading
+import time
+import tkinter as tk
+import wave
+
+'''
+Tkinter window which records and 
+saves wav audio files.
+'''
 class Audio_recorder:
     def __init__(self, window, window_title, samples_num, test_set, pos=0, emotion='Happy'):
+        # Window global var
         self.root = window
         self.root.title(window_title)
-        self.test_set = test_set
-        self.sample_num = samples_num
-        self.pos = pos
-        self.emotion = emotion
-
+        self.test_set = test_set        # Is it a test window?
+        self.sample_num = samples_num   # Number of samples to be taken
+        self.pos = pos                  # Current state
+        self.emotion = emotion          # Current emotion
         self.root.geometry("640x600")
         self.root.resizable(False, False)
         self.root.title("Voice Recorder")
@@ -55,6 +61,7 @@ class Audio_recorder:
                 for f in filenames:
                     os.remove(os.path.join(dirpath, f))
     
+    # Retake recording
     def retake(self):
         if self.pos > 0:
             if self.pos%self.sample_num == 0:
@@ -65,9 +72,11 @@ class Audio_recorder:
             self.pos -= 1
             self.sentence()
 
+    # Record 4 second sample
     def Recording(self, type, pos):
         p = pyaudio.PyAudio()
 
+        # Recording values
         channels = 2
         rate = 22050
         chunk = 1024
@@ -81,6 +90,7 @@ class Audio_recorder:
 
         frames = []
 
+        # Count down
         for i in range(0, int(rate / chunk * seconds)):
             if i < 21:
                 timeLeft = "3"
@@ -99,6 +109,7 @@ class Audio_recorder:
         stream.close()
         p.terminate()
         
+        # Save audio
         def Save():
             save_path = ""
             if self.test_set:
@@ -113,22 +124,25 @@ class Audio_recorder:
             wf.writeframes(b''.join(frames))
             wf.close()
 
+            # Play audio
             try:
                 question = AudioSegment.from_wav(self.path+type+"/"+pos+".wav")
                 play(question)
             except:
                 print("couldnt play")
 
-        
+        # Save in seperate thread
         t1 = threading.Thread(target=Save)
         t1.start()
 
         self.pos += 1
         self.sentence()
 
+    # Call recording
     def Record(self):
         self.Recording(self.emotion, str(self.pos))
     
+    # Window text
     def sentence(self):
         questions = ["'Can you help me?'", "'What is the weather today?'",
         "'Can you find me a route home?'", "'What time is it?'", 
@@ -138,6 +152,7 @@ class Audio_recorder:
 
         tempPos = self.pos
 
+        # Test
         if self.test_set:
             if self.pos < 1:
                 text = "Choose one question below to ask the bot.\n"
@@ -146,6 +161,7 @@ class Audio_recorder:
                 tk.Label(text=f"{text}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=45, y=340)
             else:
                 self.root.destroy()
+        # train
         else:
             if self.pos > self.sample_num-1 and self.pos < self.sample_num*2:
                 tempPos = self.pos - self.sample_num
@@ -158,4 +174,5 @@ class Audio_recorder:
                 ask = "Say the question:\n"+questions[tempPos]+"\nin a "+self.emotion+" expression:\n"+str(tempPos+1)+"/"+str(self.sample_num)
                 tk.Label(text=f"{ask}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=45, y=415)
             else:
+                time.sleep(4.5)
                 self.root.destroy()

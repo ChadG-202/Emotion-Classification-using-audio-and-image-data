@@ -1,13 +1,14 @@
-import threading
-import tkinter as tk
-import cv2
-import PIL.Image, PIL.ImageTk
 import argparse
+import cv2
 import dlib
 import os
+import PIL.Image, PIL.ImageTk
+import threading
+import tkinter as tk
 
 '''
-Tkinter window which can be used to view, take and store pictures.
+Tkinter window which can be used to view,
+take and store pictures.
 '''
 class Photo_taker():
     def __init__(self, window, window_title, samples_num, test_set, video_source=0, pos=0, taken=0, ok=False):
@@ -105,7 +106,8 @@ class Photo_taker():
             if self.test_set:
                 if self.taken < 1:
                     path = "App_Data/Test/Raw/Image/test.jpg"  
-            else: # Training data
+            # Training data
+            else: 
                 if self.taken < self.sample_num:
                     path = self.path+self.list_of_dir[0]+"/"+str(self.taken)+".jpg"
                     sample_total = self.sample_num
@@ -150,7 +152,7 @@ class Photo_taker():
         
         self.root.title(title)
         self.my_string_var.set(text)
-    #! got to
+
     # Update tkinter window
     def update(self):
         # Get a frame from the video source

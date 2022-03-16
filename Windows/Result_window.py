@@ -1,28 +1,33 @@
-import tkinter as tk
+from gtts import gTTS
 from PIL import ImageTk, Image
+from playsound import playsound
 from pydub import AudioSegment
 from pydub.playback import play
-import speech_recognition as sr
-from gtts import gTTS
-from playsound import playsound
-import os
-import datetime
 
+import datetime
+import os
+import speech_recognition as sr
+import tkinter as tk
+
+'''
+Tkinter window to display confidence 
+results, and give access to chatbot reply.
+'''
 class Result():
     def __init__(self, window, audio_results, image_results, combined_results, pos=0, again="n"):
+        # Window global var
         self.root = window
         self.root.geometry("640x600")
         self.root.resizable(False, False)
         self.root.title("Results")
         self.root.configure(background="#4a4a4a")
-
-        self.audio_r = audio_results
-        self.image_r = image_results
-        self.com_r = combined_results
-        self.pos = pos
-        self.again = again
-        self.processed_question = False
-        self.question = ""
+        self.audio_r = audio_results          # Array of confidence scores for the audio data
+        self.image_r = image_results          # Array of confidence scores for the image data
+        self.com_r = combined_results         # Array of confidence scores for the combined data
+        self.pos = pos                        # Current state
+        self.again = again                    # Repeat tests?
+        self.processed_question = False       # Has a chabot reply been generated?
+        self.question = ""                    # Asked question
 
         # Image
         self.canv = tk.Canvas(master=self.root)
@@ -58,32 +63,39 @@ class Result():
 
         self.root.mainloop()
     
+    # Return again status
     def __repr__(self):
         return self.again
 
+    # Increment screen state
     def next(self):
         if self.pos >= 0 and self.pos < 2:
             self.pos += 1
             self.content()
 
+    # Decrement screen state
     def back(self):
         if self.pos > 0 and self.pos <= 2:
             self.pos -= 1
             self.content()
 
+    # Test again
     def test_again(self):
         self.again = "y"
         os.remove("Chatbot/bot_reply.mp3")
         self.root.destroy()
     
+    # Play audio
     def play_sample(self):
         sample = AudioSegment.from_wav("App_Data/Test/Preprocessed/Audio/test.wav")
         play(sample)
 
+    # Set answer question state
     def answer(self):
         self.pos = -1
         self.content()
 
+    # Determine emotion from confidence scores
     def emotion(self, happy, neutral, sad):
         result = ""
         if happy > neutral and happy > sad:
@@ -102,6 +114,7 @@ class Result():
             result += "Sad" #! Sad biast
         return result
 
+    # Chatbot reply
     def get_reply(self):
         question = self.question 
         emotion = self.emotion(self.com_r[0], self.com_r[1], self.com_r[2])
@@ -184,18 +197,20 @@ class Result():
                 if emotion == "Happy":
                     reply = "Good question, tree is spelt t r e e."
                 elif emotion == "Sad":
-                    reply = "It's okay im here to help with your spelling, tree is splet t r e e."
+                    reply = "It's okay im here to help with your spelling, tree is spelt t r e e."
                 else:
                     reply = "Tree is spelt t r e e"
             else:
                 reply = "Unable to match your question. Try again."
         
-            bot_reply = gTTS(text=reply, lang="en", slow=False)
-
+            bot_reply = gTTS(text=reply, lang="en", slow=False) # Convert text to speech
+            # Save speech
             bot_reply.save("Chatbot/bot_reply.mp3")
             self.processed_question = True
+        # Play speech
         playsound("Chatbot/bot_reply.mp3")
     
+    # Chatbot state
     def Chatbot(self):
         r = sr.Recognizer()
 
@@ -214,6 +229,7 @@ class Result():
         self.playB = tk.Button(self.root, font="arial 20", text="Play",bg="#DC143C",fg="white",border=0,command=self.get_reply).place(x=285, y=330)
         self.againB = tk.Button(self.root, font="arial 20", text="Again",bg="#C1E1C1",fg="black",border=0,command=self.test_again).place(x=280, y=530)
 
+    # Clear window items
     def Clear(self):
         self.canv.place(x=640, y=600)
         self.scores.place(x=640, y=600)
@@ -221,6 +237,7 @@ class Result():
         self.backB.place(x=640, y=600)
         self.nextB.place(x=640, y=600)
     
+    # Main content to be displayed
     def content(self):
         type = ""
         if self.pos == 0:
