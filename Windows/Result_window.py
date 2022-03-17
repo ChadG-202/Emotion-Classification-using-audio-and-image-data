@@ -83,7 +83,6 @@ class Result():
     # Test again
     def test_again(self):
         self.again = "y"
-        os.remove("Chatbot/bot_reply.mp3")
         self.root.destroy()
     
     # Play audio
@@ -207,8 +206,13 @@ class Result():
                         reply = "Tree is spelt t r e e"
                 else:
                     reply = "Unable to match your question. Try again."
-            
-                bot_reply = gTTS(text=reply, lang="en", slow=False) # Convert text to speech
+                
+                try:
+                    os.remove("Chatbot/bot_reply.mp3")
+                except:
+                    print("nothing to remove")
+                # Convert text to speech
+                bot_reply = gTTS(text=reply, lang="en", slow=False) 
                 # Save speech
                 bot_reply.save("Chatbot/bot_reply.mp3")
                 self.processed_question = True

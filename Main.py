@@ -122,7 +122,7 @@ def find_smallest_dataset(path):
     return smallest_size
 
 # Process audio and image data - store in data.json file
-def Process(audio_path, image_path, json_path, test, n_mfcc=13, n_fft=2048, hop_length=512, num_segments=1): #! thread
+def Process(audio_path, image_path, json_path, test, n_mfcc=13, n_fft=2048, hop_length=512, num_segments=1):
     SAMPLE_RATE = 22050
     DURATION = 4
     SAMPLES_PER_TRACK = SAMPLE_RATE * DURATION
@@ -162,7 +162,7 @@ def Process(audio_path, image_path, json_path, test, n_mfcc=13, n_fft=2048, hop_
         data["image"].append(sized_array.tolist())
     else:
         dataset_size = find_smallest_dataset(image_path)
-        print(dataset_size)
+
         data = {
             "mapping": [],
             "mfcc": [],
@@ -238,23 +238,6 @@ def Process(audio_path, image_path, json_path, test, n_mfcc=13, n_fft=2048, hop_
     with open(json_path, "w") as fp:
         json.dump(data, fp, indent=4)
 
-# Preprocess the data
-def Preprocess(test): #!test
-    if test:
-        crop_faces('App_Data/Test/Raw/Image', 'App_Data/Test/Preprocessed/', False)
-    else:
-        def augment_image():
-            augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
-            crop_faces('App_Data/Training/Augmented/Image', 'App_Data/Training/Preprocessed/', True)
-            crop_faces('App_Data/Training/Raw/Image', 'App_Data/Training/Preprocessed/', False)
-        def augment_audio():
-            augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
-
-        t1 = threading.Thread(target=augment_image)
-        t2 = threading.Thread(target=augment_audio)
-        t1.start()
-        t2.start()
-
 # Train the models on the training data
 def Train_models(DATA_PATH, IMG_SIZE):#! thread
     # Retrive audio data
@@ -284,55 +267,26 @@ def Train_models(DATA_PATH, IMG_SIZE):#! thread
         
         return X_train, X_validation, y_train, y_validation
     
-    # CNN audio model
-    def build_audio_model(input_shape):
+    # CNN model
+    def build_model(input_shape):
         model = keras.Sequential()
         
         model.add(keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=input_shape))
-        model.add(keras.layers.BatchNormalization())
         model.add(keras.layers.Conv2D(32, (3, 3), activation='relu'))
-        model.add(keras.layers.BatchNormalization())
         model.add(keras.layers.MaxPooling2D((3, 3), strides=(2, 2), padding='same'))                                
-        model.add(keras.layers.Dropout(0.25))  
+        model.add(keras.layers.Dropout(0.2))  
         
-        model.add(keras.layers.BatchNormalization())
-        model.add(keras.layers.Conv2D(64, (3, 3), activation='relu'))
-        model.add(keras.layers.BatchNormalization())
+        model.add(keras.layers.Conv2D(64, (3, 3), activation='relu')) 
         model.add(keras.layers.Conv2D(64, (3, 3), activation='relu'))   
         model.add(keras.layers.MaxPooling2D((3, 3), strides=(2, 2), padding='same'))                                
-        model.add(keras.layers.Dropout(0.25))
+        model.add(keras.layers.Dropout(0.1))
         
         model.add(keras.layers.Flatten())
-            
+        
+        model.add(keras.layers.Dense(184, activation='relu'))
+        model.add(keras.layers.Dropout(0.25))
         model.add(keras.layers.Dense(256, activation='relu'))
-        model.add(keras.layers.Dropout(0.5))
-        model.add(keras.layers.Dense(480, activation='relu'))
-        model.add(keras.layers.Dropout(0.05))
-        
-        model.add(keras.layers.Dense(3, activation='softmax'))
-        
-        return model
-
-    # CNN image model
-    def build_image_model(input_shape):
-        model = keras.Sequential()
-        
-        model.add(keras.layers.Conv2D(16, (3, 3), activation='relu', input_shape=input_shape))
-        model.add(keras.layers.Conv2D(16, (3, 3), activation='relu'))
-        model.add(keras.layers.MaxPooling2D((3, 3), strides=(2, 2), padding='same'))                                
-        model.add(keras.layers.Dropout(0.05))  
-        
-        model.add(keras.layers.Conv2D(16, (3, 3), activation='relu'))
-        model.add(keras.layers.Conv2D(64, (3, 3), activation='relu'))   
-        model.add(keras.layers.MaxPooling2D((3, 3), strides=(2, 2), padding='same'))                                
-        model.add(keras.layers.Dropout(0.25))
-        
-        model.add(keras.layers.Flatten())
-            
-        model.add(keras.layers.Dense(192, activation='relu'))
-        model.add(keras.layers.Dropout(0.25))
-        model.add(keras.layers.Dense(320, activation='relu'))
-        model.add(keras.layers.Dropout(0.25))
+        model.add(keras.layers.Dropout(0.14))
         
         model.add(keras.layers.Dense(3, activation='softmax'))
         
@@ -350,7 +304,7 @@ def Train_models(DATA_PATH, IMG_SIZE):#! thread
 
     # Audio train
     audio_input_shape = (X_audio_train.shape[1], X_audio_train.shape[2], X_audio_train.shape[3])
-    audio_model = build_audio_model(audio_input_shape)
+    audio_model = build_model(audio_input_shape)
 
     audio_optimizer = keras.optimizers.Adam(learning_rate=0.0001)
 
@@ -367,9 +321,9 @@ def Train_models(DATA_PATH, IMG_SIZE):#! thread
     X_image_validation = X_image_validation.astype("float32")/255.0
 
     image_input_shape = (X_image_train.shape[1:])
-    image_model = build_image_model(image_input_shape)
+    image_model = build_model(image_input_shape)
 
-    image_optimizer = keras.optimizers.Adam(learning_rate=0.0001) #! need to work out epoch, batch and learning rate
+    image_optimizer = keras.optimizers.Adam(learning_rate=0.0001)
 
     image_model.compile(optimizer=image_optimizer,
                 loss="sparse_categorical_crossentropy",
@@ -377,7 +331,7 @@ def Train_models(DATA_PATH, IMG_SIZE):#! thread
 
     # image_model.summary()
 
-    image_history = image_model.fit(X_image_train, y_image_train, batch_size=8, epochs=15, validation_data=(X_image_validation, y_image_validation), verbose=1)
+    image_history = image_model.fit(X_image_train, y_image_train, batch_size=2, epochs=15, validation_data=(X_image_validation, y_image_validation), verbose=1)
 
     # Save models
     audio_model.save("Models/audioClassifier.model")
@@ -427,7 +381,7 @@ def Predict(): #! thread
 def Test():
     Photo_taker(tk.Tk(),'Take Photo', 1, True)
     Audio_recorder(tk.Tk(), 'Audio Recorder', 1, True)
-    Preprocess(True)
+    crop_faces('App_Data/Test/Raw/Image', 'App_Data/Test/Preprocessed/', False)
     Process("App_Data/Test/Preprocessed/Audio/test.wav", "App_Data/Test/Preprocessed/Image/test.jpg", "JSON_files/TestData.json", True)
     audio_result, image_result, combined_result = Predict()
     again = Result(tk.Tk(), audio_result, image_result, combined_result)
@@ -435,12 +389,18 @@ def Test():
         Test()
 
 if __name__ == "__main__":
-    sample_num = str(Start(tk.Tk(), 'Emotion Chatbot'))
-    Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_num, int(sample_num), False)
-    Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_num), False)
-    Preprocess(False)
-    Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
-    Train_models("JSON_files/TrainData.json", 48)
+    # sample_num = str(Start(tk.Tk(), 'Emotion Chatbot'))
+    # Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_num, int(sample_num), False)
+    # Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_num), False)
+    # def augment_audio():
+    #     augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
+    # t1 = threading.Thread(target=augment_audio)
+    # t1.start()
+    # augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
+    # crop_faces('App_Data/Training/Augmented/Image', 'App_Data/Training/Preprocessed/', True)
+    # crop_faces('App_Data/Training/Raw/Image', 'App_Data/Training/Preprocessed/', False)
+    # Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
+    # Train_models("JSON_files/TrainData.json", 48)
     Test()
     
     #TODO try using threads
