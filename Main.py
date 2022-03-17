@@ -239,7 +239,7 @@ def Process(audio_path, image_path, json_path, test, n_mfcc=13, n_fft=2048, hop_
         json.dump(data, fp, indent=4)
 
 # Train the models on the training data
-def Train_models(DATA_PATH, IMG_SIZE):#! thread
+def Train_models(DATA_PATH, IMG_SIZE):
     # Retrive audio data
     def load_audio_data(data_path):
         with open(data_path, "r") as fp:
@@ -302,19 +302,25 @@ def Train_models(DATA_PATH, IMG_SIZE):#! thread
 
     X_image_train, X_image_validation, y_image_train, y_image_validation = prepare_datasets(validation_size, X_image, y_image, False)
 
-    # Audio train
-    audio_input_shape = (X_audio_train.shape[1], X_audio_train.shape[2], X_audio_train.shape[3])
-    audio_model = build_model(audio_input_shape)
+    def train_audio():#! seemed to work but needs more testing to check
+        # Audio train
+        audio_input_shape = (X_audio_train.shape[1], X_audio_train.shape[2], X_audio_train.shape[3])
+        audio_model = build_model(audio_input_shape)
 
-    audio_optimizer = keras.optimizers.Adam(learning_rate=0.0001)
+        audio_optimizer = keras.optimizers.Adam(learning_rate=0.0001)
 
-    audio_model.compile(optimizer=audio_optimizer,
-                loss="sparse_categorical_crossentropy",
-                metrics=["accuracy"])
+        audio_model.compile(optimizer=audio_optimizer,
+                    loss="sparse_categorical_crossentropy",
+                    metrics=["accuracy"])
 
-    # audio_model.summary()
+        # audio_model.summary()
 
-    audio_history = audio_model.fit(X_audio_train, y_audio_train, batch_size=2, epochs=15, validation_data=(X_audio_validation, y_audio_validation), verbose=1)
+        audio_history = audio_model.fit(X_audio_train, y_audio_train, batch_size=2, epochs=15, validation_data=(X_audio_validation, y_audio_validation), verbose=1)
+        
+        audio_model.save("Models/audioClassifier.model")
+
+    t1 = threading.Thread(target=train_audio)
+    t1.start()
 
     # Image train
     X_image_train = X_image_train.astype("float32")/255.0
@@ -333,8 +339,6 @@ def Train_models(DATA_PATH, IMG_SIZE):#! thread
 
     image_history = image_model.fit(X_image_train, y_image_train, batch_size=2, epochs=15, validation_data=(X_image_validation, y_image_validation), verbose=1)
 
-    # Save models
-    audio_model.save("Models/audioClassifier.model")
     image_model.save("Models/imageClassifier.model")
 
     # return audio_history, image_history
@@ -345,7 +349,7 @@ def Predictions(audio, image):
     return audio, image, percentages
 
 # Predict on test data
-def Predict(): #! thread
+def Predict():
     IMG_SIZE = 48
 
     # Load test Json data
@@ -389,22 +393,24 @@ def Test():
         Test()
 
 if __name__ == "__main__":
-    # sample_num = str(Start(tk.Tk(), 'Emotion Chatbot'))
-    # Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_num, int(sample_num), False)
-    # Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_num), False)
-    # def augment_audio():
-    #     augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
-    # t1 = threading.Thread(target=augment_audio)
-    # t1.start()
-    # augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
-    # crop_faces('App_Data/Training/Augmented/Image', 'App_Data/Training/Preprocessed/', True)
-    # crop_faces('App_Data/Training/Raw/Image', 'App_Data/Training/Preprocessed/', False)
-    # Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
-    # Train_models("JSON_files/TrainData.json", 48)
+    sample_num = str(Start(tk.Tk(), 'Emotion Chatbot'))
+    Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_num, int(sample_num), False)
+    Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_num), False)
+    def augment_audio():
+        augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
+    t1 = threading.Thread(target=augment_audio)
+    t1.start()
+    augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
+    crop_faces('App_Data/Training/Augmented/Image', 'App_Data/Training/Preprocessed/', True)
+    crop_faces('App_Data/Training/Raw/Image', 'App_Data/Training/Preprocessed/', False)
+    Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
+    Train_models("JSON_files/TrainData.json", 48)
     Test()
     
-    #TODO try using threads
     #TODO Try using lambda
-    #TODO add pre trained mode using larger dataset for me
+    #TODO add pre trained mode using larger dataset for testing with
+    #TODO add loading when play pressed for chatbot (cover with text then paste new button onto once done)
     #TODO create junit tests
     #! try increasing augmentations
+    #! test properly
+    #! find out why data gets cleared once result window is shown
