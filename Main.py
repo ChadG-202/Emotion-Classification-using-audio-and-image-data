@@ -407,8 +407,7 @@ if __name__ == "__main__":
     Train_models("JSON_files/TrainData.json", 48)
     Test()
     
-    #TODO Try using lambda
-    #TODO add pre trained mode using larger dataset for testing with
+    #TODO add pre trained mode using larger dataset for testing with (add button on start tochoose test mode, use pre trained models on large dataset)
     #TODO add loading when play pressed for chatbot (cover with text then paste new button onto once done)
     #TODO create junit tests
     #! try increasing augmentations
