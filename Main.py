@@ -413,4 +413,3 @@ if __name__ == "__main__":
     #TODO create junit tests
     #! try increasing augmentations
     #! test properly
-    #! find out why data gets cleared once result window is shown

@@ -47,8 +47,8 @@ class Audio_recorder:
         if not self.test_set:
             self.btn_retake=tk.Button(self.root, font="arial 20", text="Re-take", bg="#111111", fg="white", border=0, command=self.retake).pack(pady=10)
 
-        # Initial clear
-        self.clear(self.path)
+            # Initial clear
+            self.clear(self.path)
 
         self.sentence()
 

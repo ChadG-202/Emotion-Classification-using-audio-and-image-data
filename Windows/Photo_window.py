@@ -52,7 +52,8 @@ class Photo_taker():
         self.btn_retake=tk.Button(self.root, font="arial 20", text="Re-take", bg="#111111", fg="white", border=0, command=self.retake)
 
         # Clear data from path to make room for new data
-        self.clear(self.path)
+        if not self.test_set:
+            self.clear(self.path)
 
         # After it is called once, the update method will be automatically called every 10 milliseconds
         self.delay=10
