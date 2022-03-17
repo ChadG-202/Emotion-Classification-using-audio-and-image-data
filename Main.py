@@ -112,7 +112,7 @@ def augment_image_data(path, aug_path):
                 pass
 
 # Determine the smallest dataset
-def find_smallest_dataset(path): #!test
+def find_smallest_dataset(path):
     dir_list = ["/Happy", "/Neutral", "/Sad"]
     data_set_sizes = []
     for dir in dir_list:
@@ -122,7 +122,7 @@ def find_smallest_dataset(path): #!test
     return smallest_size
 
 # Process audio and image data - store in data.json file
-def Process(audio_path, image_path, json_path, test, n_mfcc=13, n_fft=2048, hop_length=512, num_segments=1):
+def Process(audio_path, image_path, json_path, test, n_mfcc=13, n_fft=2048, hop_length=512, num_segments=1): #! thread
     SAMPLE_RATE = 22050
     DURATION = 4
     SAMPLES_PER_TRACK = SAMPLE_RATE * DURATION
@@ -256,7 +256,7 @@ def Preprocess(test): #!test
         t2.start()
 
 # Train the models on the training data
-def Train_models(DATA_PATH, IMG_SIZE):
+def Train_models(DATA_PATH, IMG_SIZE):#! thread
     # Retrive audio data
     def load_audio_data(data_path):
         with open(data_path, "r") as fp:
@@ -369,7 +369,7 @@ def Train_models(DATA_PATH, IMG_SIZE):
     image_input_shape = (X_image_train.shape[1:])
     image_model = build_image_model(image_input_shape)
 
-    image_optimizer = keras.optimizers.Adam(learning_rate=0.001) #! need to work out epoch, batch and learning rate
+    image_optimizer = keras.optimizers.Adam(learning_rate=0.0001) #! need to work out epoch, batch and learning rate
 
     image_model.compile(optimizer=image_optimizer,
                 loss="sparse_categorical_crossentropy",
@@ -377,7 +377,7 @@ def Train_models(DATA_PATH, IMG_SIZE):
 
     # image_model.summary()
 
-    image_history = image_model.fit(X_image_train, y_image_train, batch_size=2, epochs=15, validation_data=(X_image_validation, y_image_validation), verbose=1)
+    image_history = image_model.fit(X_image_train, y_image_train, batch_size=8, epochs=15, validation_data=(X_image_validation, y_image_validation), verbose=1)
 
     # Save models
     audio_model.save("Models/audioClassifier.model")
@@ -391,7 +391,7 @@ def Predictions(audio, image):
     return audio, image, percentages
 
 # Predict on test data
-def Predict():
+def Predict(): #! thread
     IMG_SIZE = 48
 
     # Load test Json data
@@ -435,16 +435,16 @@ def Test():
         Test()
 
 if __name__ == "__main__":
-    # sample_num = str(Start(tk.Tk(), 'Emotion Chatbot'))
-    # Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_num, int(sample_num), False)
-    # Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_num), False)
-    # Preprocess(False)
+    sample_num = str(Start(tk.Tk(), 'Emotion Chatbot'))
+    Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_num, int(sample_num), False)
+    Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_num), False)
+    Preprocess(False)
     Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
     Train_models("JSON_files/TrainData.json", 48)
     Test()
     
-    #TODO comment code
     #TODO try using threads
     #TODO Try using lambda
-    #TODO create a training enviroment to train the model on around 300 samples find best model for task (Compare CNN, other)
+    #TODO add pre trained mode using larger dataset for me
     #TODO create junit tests
+    #! try increasing augmentations
