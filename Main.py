@@ -14,6 +14,7 @@ import math
 import numpy as np
 import os
 import soundfile as sf
+import threading
 import tensorflow as tf
 import tkinter as tk
 import tensorflow.keras as keras
@@ -111,15 +112,13 @@ def augment_image_data(path, aug_path):
                 pass
 
 # Determine the smallest dataset
-def find_smallest_dataset(path):
+def find_smallest_dataset(path): #!test
     dir_list = ["/Happy", "/Neutral", "/Sad"]
-    smallest_size = 0
+    data_set_sizes = []
     for dir in dir_list:
         size = sum(len(files) for _, _, files in os.walk(path+dir))
-        if smallest_size == 0:
-            smallest_size = size
-        elif smallest_size > size:
-            smallest_size = size
+        data_set_sizes.append(size)
+    smallest_size = min(data_set_sizes)
     return smallest_size
 
 # Process audio and image data - store in data.json file
@@ -128,8 +127,6 @@ def Process(audio_path, image_path, json_path, test, n_mfcc=13, n_fft=2048, hop_
     DURATION = 4
     SAMPLES_PER_TRACK = SAMPLE_RATE * DURATION
     IMG_SIZE = 48
-
-    dataset_size = find_smallest_dataset(image_path)
 
     if test:
         data = {
@@ -164,6 +161,8 @@ def Process(audio_path, image_path, json_path, test, n_mfcc=13, n_fft=2048, hop_
         sized_array = cv2.resize(img_array, (IMG_SIZE, IMG_SIZE))
         data["image"].append(sized_array.tolist())
     else:
+        dataset_size = find_smallest_dataset(image_path)
+        print(dataset_size)
         data = {
             "mapping": [],
             "mfcc": [],
@@ -191,7 +190,7 @@ def Process(audio_path, image_path, json_path, test, n_mfcc=13, n_fft=2048, hop_
                         file_path = os.path.join(dirpath, f)
                         signal, sr = librosa.load(file_path, sr=SAMPLE_RATE)
                     except Exception as e:                                                    
-                        print('Audio failed to process: ' + e)
+                        print('Audio failed to process: ' + str(e))
                     
                     for s in range(num_segments):
                         # Process audio
@@ -233,21 +232,28 @@ def Process(audio_path, image_path, json_path, test, n_mfcc=13, n_fft=2048, hop_
                         data["image"].append(sized_array.tolist())
                         print("{}".format(file_path))
                     except Exception as e:                                                    
-                        print('Image failed to process: ' + e)
+                        print('Image failed to process: ' + str(e))
     
     # dump stored data into json file
     with open(json_path, "w") as fp:
         json.dump(data, fp, indent=4)
 
 # Preprocess the data
-def Preprocess(test):
+def Preprocess(test): #!test
     if test:
         crop_faces('App_Data/Test/Raw/Image', 'App_Data/Test/Preprocessed/', False)
     else:
-        augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
-        augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
-        crop_faces('App_Data/Training/Augmented/Image', 'App_Data/Training/Preprocessed/', True)
-        crop_faces('App_Data/Training/Raw/Image', 'App_Data/Training/Preprocessed/', False)
+        def augment_image():
+            augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
+            crop_faces('App_Data/Training/Augmented/Image', 'App_Data/Training/Preprocessed/', True)
+            crop_faces('App_Data/Training/Raw/Image', 'App_Data/Training/Preprocessed/', False)
+        def augment_audio():
+            augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
+
+        t1 = threading.Thread(target=augment_image)
+        t2 = threading.Thread(target=augment_audio)
+        t1.start()
+        t2.start()
 
 # Train the models on the training data
 def Train_models(DATA_PATH, IMG_SIZE):
@@ -354,7 +360,7 @@ def Train_models(DATA_PATH, IMG_SIZE):
 
     # audio_model.summary()
 
-    audio_history = audio_model.fit(X_audio_train, y_audio_train, batch_size=2, epochs=15, validation_data=(X_audio_validation, y_audio_validation), verbose=0)
+    audio_history = audio_model.fit(X_audio_train, y_audio_train, batch_size=2, epochs=15, validation_data=(X_audio_validation, y_audio_validation), verbose=1)
 
     # Image train
     X_image_train = X_image_train.astype("float32")/255.0
@@ -371,7 +377,7 @@ def Train_models(DATA_PATH, IMG_SIZE):
 
     # image_model.summary()
 
-    image_history = image_model.fit(X_image_train, y_image_train, batch_size=2, epochs=15, validation_data=(X_image_validation, y_image_validation), verbose=0)
+    image_history = image_model.fit(X_image_train, y_image_train, batch_size=2, epochs=15, validation_data=(X_image_validation, y_image_validation), verbose=1)
 
     # Save models
     audio_model.save("Models/audioClassifier.model")
@@ -381,13 +387,7 @@ def Train_models(DATA_PATH, IMG_SIZE):
 
 # Generate combined prediction
 def Predictions(audio, image):
-    percentages = []
-    happy = float(abs(image[0])) + float(abs(audio[0]))
-    percentages.append(happy)
-    neutral = float(abs(image[1])) + float(abs(audio[1]))
-    percentages.append(neutral)
-    sad = float(abs(image[2])) + float(abs(audio[2]))
-    percentages.append(sad)
+    percentages = list(map(lambda x, y: abs(x)+abs(y), audio, image))
     return audio, image, percentages
 
 # Predict on test data
@@ -431,14 +431,14 @@ def Test():
     Process("App_Data/Test/Preprocessed/Audio/test.wav", "App_Data/Test/Preprocessed/Image/test.jpg", "JSON_files/TestData.json", True)
     audio_result, image_result, combined_result = Predict()
     again = Result(tk.Tk(), audio_result, image_result, combined_result)
-    if str(again) == "y":     # Repeat
+    if str(again) == "y":
         Test()
 
 if __name__ == "__main__":
-    sample_num = str(Start(tk.Tk(), 'Emotion Chatbot'))
-    Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_num, int(sample_num), False)
-    Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_num), False)
-    Preprocess(False)
+    # sample_num = str(Start(tk.Tk(), 'Emotion Chatbot'))
+    # Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_num, int(sample_num), False)
+    # Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_num), False)
+    # Preprocess(False)
     Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
     Train_models("JSON_files/TrainData.json", 48)
     Test()

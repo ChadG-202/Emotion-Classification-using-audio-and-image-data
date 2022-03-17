@@ -122,117 +122,124 @@ class Result():
     def get_reply(self):
         question = self.question 
         emotion = self.emotion(self.com_r[0], self.com_r[1], self.com_r[2])
-        if not self.processed_question:
-            reply = ""
-            if question == "can you help me":
-                if emotion == "Happy":
-                    reply = "Yes, i'm always in the mood to help you"
-                elif emotion == "Sad":
-                    reply = "Are you alright, what do you need?"
-                else:
-                    reply = "What do you need?"
+        def the_reply():
+            if not self.processed_question:
+                reply = ""
+                if question == "can you help me":
+                    if emotion == "Happy":
+                        reply = "Yes, i'm always in the mood to help you"
+                    elif emotion == "Sad":
+                        reply = "Are you alright, what do you need?"
+                    else:
+                        reply = "What do you need?"
 
-            elif question == "what is the weather today":
-                if emotion == "Happy":
-                    reply = "The weather is like your mood sunny with a high of 12 degrees"
-                elif emotion == "Sad":
-                    reply = "Hopefully your mood will be lifted as its sunny todays with a high of 12 degrees."
-                else:
-                    reply = "It looks to be sunny with a high of 12 degrees."
+                elif question == "what is the weather today":
+                    if emotion == "Happy":
+                        reply = "The weather is like your mood sunny with a high of 12 degrees"
+                    elif emotion == "Sad":
+                        reply = "Hopefully your mood will be lifted as its sunny todays with a high of 12 degrees."
+                    else:
+                        reply = "It looks to be sunny with a high of 12 degrees."
 
-            elif question == "can you find me a route home":
-                if emotion == "Happy":
-                    reply = "Of course finding the best possible routes for you to get home."
-                elif emotion == "sad":
-                    reply = "Working as quick as possible to find you routes home. If you are lost or in danger just ask me to call emergency serices."
-                else:
-                    reply = "Finding routes to home."
+                elif question == "can you find me a route home":
+                    if emotion == "Happy":
+                        reply = "Of course finding the best possible routes for you to get home."
+                    elif emotion == "sad":
+                        reply = "Working as quick as possible to find you routes home. If you are lost or in danger just ask me to call emergency serices."
+                    else:
+                        reply = "Finding routes to home."
 
-            elif question == "what is there to watch on Netflix":
-                if emotion == "Happy":
-                    reply = "The comedy meet the parents is currently on netflix. Would you like me to play it?"
-                elif emotion == "Sad":
-                    reply = "I suggest the fault in our stars. Would you like me to play it?"
-                else:
-                    reply = "There is a range of movies from the hustle, king kong and justice league. Would you like me to open the app so you can decide?"
+                elif question == "what is there to watch on Netflix":
+                    if emotion == "Happy":
+                        reply = "The comedy meet the parents is currently on netflix. Would you like me to play it?"
+                    elif emotion == "Sad":
+                        reply = "I suggest the fault in our stars. Would you like me to play it?"
+                    else:
+                        reply = "There is a range of movies from the hustle, king kong and justice league. Would you like me to open the app so you can decide?"
 
-            elif question == "what time is it":
-                if emotion == "Happy":
-                    reply = "It's {} {} I hope you remain this happy for the rest of the day.".format(str(currentDT.hour), str(currentDT.minute))
-                elif emotion == "Sad":
-                    currentDT = datetime.datetime.now()
-                    reply = "I'm sure you can make it on time its {} {}.".format(str(currentDT.hour), str(currentDT.minute))
-                else:
-                    reply = "It is {} {}.".format(str(currentDT.hour), str(currentDT.minute))
+                elif question == "what time is it":
+                    if emotion == "Happy":
+                        reply = "It's {} {} I hope you remain this happy for the rest of the day.".format(str(currentDT.hour), str(currentDT.minute))
+                    elif emotion == "Sad":
+                        currentDT = datetime.datetime.now()
+                        reply = "I'm sure you can make it on time its {} {}.".format(str(currentDT.hour), str(currentDT.minute))
+                    else:
+                        reply = "It is {} {}.".format(str(currentDT.hour), str(currentDT.minute))
 
-            elif question == "can you turn the light on":
-                if emotion == "Happy":
-                    reply = "Let match this room to your mood, turning the light on."
-                elif emotion == "Sad":
-                    reply = "Of course, hopefully this can lighten your day."
-                else:
-                    reply = "Turning the light on."
+                elif question == "can you turn the light on":
+                    if emotion == "Happy":
+                        reply = "Let match this room to your mood, turning the light on."
+                    elif emotion == "Sad":
+                        reply = "Of course, hopefully this can lighten your day."
+                    else:
+                        reply = "Turning the light on."
 
-            elif question == "what song is this":
-                if emotion == "Happy":
-                    reply = "This feature doesnt exist, we know you want this feature so we are working our best to get it to you."
-                elif emotion == "Sad":
-                    reply = "I'm sorry but this feature cannot yet be used. We are working hard to get it implimented."
-                else:
-                    reply = "This feature does not yet exist."
+                elif question == "what song is this":
+                    if emotion == "Happy":
+                        reply = "This feature doesnt exist, we know you want this feature so we are working our best to get it to you."
+                    elif emotion == "Sad":
+                        reply = "I'm sorry but this feature cannot yet be used. We are working hard to get it implimented."
+                    else:
+                        reply = "This feature does not yet exist."
 
-            elif question == "who am i":
-                if emotion == "Happy":
-                    reply = "You are warm, pleasant human being"
-                elif emotion == "Sad":
-                    reply = "Don't be upset, you are an amazing human being"
-                else:
-                    reply = "you are a human being"
-                    
-            elif question == "are unicorns real":
-                if emotion == "Happy":
-                    reply = "Of course unicorns are real."
-                elif emotion == "Sad":
-                    reply = "Don't be sad, there's no evidence to suggest unicorns dont exist."
-                else:
-                    reply = "There is currently no evidence of the existence of unicorns."
+                elif question == "who am i":
+                    if emotion == "Happy":
+                        reply = "You are warm, pleasant human being"
+                    elif emotion == "Sad":
+                        reply = "Don't be upset, you are an amazing human being"
+                    else:
+                        reply = "you are a human being"
+                        
+                elif question == "are unicorns real":
+                    if emotion == "Happy":
+                        reply = "Of course unicorns are real."
+                    elif emotion == "Sad":
+                        reply = "Don't be sad, there's no evidence to suggest unicorns dont exist."
+                    else:
+                        reply = "There is currently no evidence of the existence of unicorns."
 
-            elif question == "how do you spell tree":
-                if emotion == "Happy":
-                    reply = "Good question, tree is spelt t r e e."
-                elif emotion == "Sad":
-                    reply = "It's okay im here to help with your spelling, tree is spelt t r e e."
+                elif question == "how do you spell tree":
+                    if emotion == "Happy":
+                        reply = "Good question, tree is spelt t r e e."
+                    elif emotion == "Sad":
+                        reply = "It's okay im here to help with your spelling, tree is spelt t r e e."
+                    else:
+                        reply = "Tree is spelt t r e e"
                 else:
-                    reply = "Tree is spelt t r e e"
-            else:
-                reply = "Unable to match your question. Try again."
+                    reply = "Unable to match your question. Try again."
+            
+                bot_reply = gTTS(text=reply, lang="en", slow=False) # Convert text to speech
+                # Save speech
+                bot_reply.save("Chatbot/bot_reply.mp3")
+                self.processed_question = True
+            # Play speech
+            playsound("Chatbot/bot_reply.mp3")
         
-            bot_reply = gTTS(text=reply, lang="en", slow=False) # Convert text to speech
-            # Save speech
-            bot_reply.save("Chatbot/bot_reply.mp3")
-            self.processed_question = True
-        # Play speech
-        playsound("Chatbot/bot_reply.mp3")
+        t1 = threading.Thread(target=the_reply)
+        t1.start()
     
     # Chatbot state
     def Chatbot(self):
         r = sr.Recognizer()
+        
+        def get_question_asked():
+            with sr.AudioFile("App_Data/Test/Preprocessed/Audio/test.wav") as source:
+                audio = r.record(source)
+            try:
+                self.question = r.recognize_google(audio)
+                tk.Label(text="You asked: "+self.question, font="arial 20",width=40,background="#4a4a4a",fg="white").place(x=0, y=150)
+            except Exception as e:
+                print("Exception: "+str(e))
 
-        #! remove button and have threading to first load question then play reply, have appropriate text showing while its loading
-        with sr.AudioFile("App_Data/Test/Preprocessed/Audio/test.wav") as source:
-            audio = r.record(source)
-        try:
-            self.question = r.recognize_google(audio)
-            tk.Label(text="You asked: "+self.question, font="arial 20",width=40,background="#4a4a4a",fg="white").place(x=0, y=150)
-        except Exception as e:
-            print("Exception: "+str(e))
+            tk.Button(self.root, font="arial 20", text="Play",bg="#DC143C",fg="white",border=0,command=self.get_reply).place(x=285, y=330)
+
+        t1 = threading.Thread(target=get_question_asked)
+        t1.start()
 
         tk.Label(text="Chatbot should reply based on your question and emotion.", font="arial 15",width=58,background="#4a4a4a",fg="#98FB98").place(x=0, y=230)
         tk.Label(text="Turn sound on to hear reply!", font="arial 12",width=70,background="#4a4a4a",fg="#98FB98").place(x=0, y=280)
-
-        # Button
-        self.playB = tk.Button(self.root, font="arial 20", text="Play",bg="#DC143C",fg="white",border=0,command=self.get_reply).place(x=285, y=330)
-        self.againB = tk.Button(self.root, font="arial 20", text="Again",bg="#C1E1C1",fg="black",border=0,command=self.test_again).place(x=280, y=530)
+        
+        tk.Button(self.root, font="arial 20", text="Again",bg="#C1E1C1",fg="black",border=0,command=self.test_again).place(x=280, y=530)
 
     # Clear window items
     def Clear(self):
@@ -245,6 +252,7 @@ class Result():
     # Main content to be displayed
     def content(self):
         type = ""
+        prediction = ""
         if self.pos == 0:
             self.Clear()
 
@@ -261,7 +269,6 @@ class Result():
             type = "AUDIO"
             prediction = str(int(max(self.audio_r)*100))+"%"+" "+self.emotion(self.audio_r[0], self.audio_r[1], self.audio_r[2])
 
-
             self.play.place(x=280, y=300)
             self.backB.place(x=15, y=530)
             self.nextB.place(x=550, y=530)
@@ -277,6 +284,7 @@ class Result():
 
         elif self.pos == -1:
             self.Clear()
+
             self.answerB.place(x=640, y=600)
             self.label1.place(x=640, y=600)
             self.label2.place(x=640, y=600)

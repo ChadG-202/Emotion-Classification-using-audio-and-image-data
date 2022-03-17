@@ -87,8 +87,8 @@ class Photo_taker():
             def save_image():
                 try:
                     cv2.imwrite(path,cv2.cvtColor(frame,cv2.COLOR_RGB2BGR))
-                except:
-                    print("Folder does not exist")
+                except Exception as e:
+                    print(str(e) + " Folder does not exist")
 
             # Make sure there is 1 face visible in photo
             def check_face():

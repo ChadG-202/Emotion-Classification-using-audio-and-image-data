@@ -125,11 +125,12 @@ class Audio_recorder:
             wf.close()
 
             # Play audio
-            try:
-                question = AudioSegment.from_wav(self.path+type+"/"+pos+".wav")
-                play(question)
-            except:
-                print("couldnt play")
+            if not self.test_set:
+                try:
+                    question = AudioSegment.from_wav(self.path+type+"/"+pos+".wav")
+                    play(question)
+                except Exception as e:
+                    print(str(e)+" couldnt play")
 
         # Save in seperate thread
         t1 = threading.Thread(target=Save)
