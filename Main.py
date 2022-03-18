@@ -375,7 +375,7 @@ def Predict(test_mode):
     # Fit audio data
     audio = audio[..., np.newaxis]
     s = (-1, audio.shape[1], audio.shape[2], 1)
-    a = audio[0].reshape(s)
+    a = audio.reshape(s)
 
     # Predict audio
     audio_predictions = audio_model.predict(a)
@@ -419,4 +419,3 @@ if __name__ == "__main__":
     
     #TODO create junit tests
     #! try increasing augmentations
-    #! test properly
