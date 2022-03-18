@@ -157,10 +157,10 @@ class Result():
                         reply = "There is a range of movies from the hustle, king kong and justice league. Would you like me to open the app so you can decide?"
 
                 elif question == "what time is it":
+                    currentDT = datetime.datetime.now()
                     if emotion == "Happy":
                         reply = "It's {} {} I hope you remain this happy for the rest of the day.".format(str(currentDT.hour), str(currentDT.minute))
                     elif emotion == "Sad":
-                        currentDT = datetime.datetime.now()
                         reply = "I'm sure you can make it on time its {} {}.".format(str(currentDT.hour), str(currentDT.minute))
                     else:
                         reply = "It is {} {}.".format(str(currentDT.hour), str(currentDT.minute))

@@ -393,9 +393,9 @@ def Test():
         Test()
 
 if __name__ == "__main__":
-    sample_num = str(Start(tk.Tk(), 'Emotion Chatbot'))
-    Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_num, int(sample_num), False)
-    Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_num), False)
+    # sample_num = str(Start(tk.Tk(), 'Emotion Chatbot'))
+    # Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_num, int(sample_num), False)
+    # Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_num), False)
     def augment_audio():
         augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
     t1 = threading.Thread(target=augment_audio)
