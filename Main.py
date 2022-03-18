@@ -391,10 +391,10 @@ def Predict(test_mode):
 
 # Functions needed to test the model
 def Test(test_mode):
-    # Photo_taker(tk.Tk(),'Take Photo', 1, True)
-    # Audio_recorder(tk.Tk(), 'Audio Recorder', 1, True)
-    # crop_faces('App_Data/Test/Raw/Image', 'App_Data/Test/Preprocessed/', False)
-    # Process("App_Data/Test/Preprocessed/Audio/test.wav", "App_Data/Test/Preprocessed/Image/test.jpg", "JSON_files/TestData.json", True)
+    Photo_taker(tk.Tk(),'Take Photo', 1, True)
+    Audio_recorder(tk.Tk(), 'Audio Recorder', 1, True)
+    crop_faces('App_Data/Test/Raw/Image', 'App_Data/Test/Preprocessed/', False)
+    Process("App_Data/Test/Preprocessed/Audio/test.wav", "App_Data/Test/Preprocessed/Image/test.jpg", "JSON_files/TestData.json", True)
     audio_result, image_result, combined_result = Predict(test_mode)
     again = Result(tk.Tk(), audio_result, image_result, combined_result)
     if str(again) == "y":
