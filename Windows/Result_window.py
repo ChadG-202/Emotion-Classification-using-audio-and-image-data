@@ -159,7 +159,7 @@ class Result():
                 elif question == "what time is it":
                     currentDT = datetime.datetime.now()
                     if emotion == "Happy":
-                        reply = "It's {} {} I hope you remain this happy for the rest of the day.".format(str(currentDT.hour), str(currentDT.minute))
+                        reply = "It's {} {}. I hope you remain this happy for the rest of the day.".format(str(currentDT.hour), str(currentDT.minute))
                     elif emotion == "Sad":
                         reply = "I'm sure you can make it on time its {} {}.".format(str(currentDT.hour), str(currentDT.minute))
                     else:
@@ -208,7 +208,7 @@ class Result():
                     reply = "Unable to match your question. Try again."
                 
                 try:
-                    os.remove("Chatbot/bot_reply.mp3")
+                    os.remove("Chatbot/bot_reply.mp3")#! play when opened (have Loading) then cover loading with play button once played 
                 except:
                     print("nothing to remove")
                 # Convert text to speech

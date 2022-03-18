@@ -302,7 +302,7 @@ def Train_models(DATA_PATH, IMG_SIZE):
 
     X_image_train, X_image_validation, y_image_train, y_image_validation = prepare_datasets(validation_size, X_image, y_image, False)
 
-    def train_audio():#! seemed to work but needs more testing to check
+    def train_audio():
         # Audio train
         audio_input_shape = (X_audio_train.shape[1], X_audio_train.shape[2], X_audio_train.shape[3])
         audio_model = build_model(audio_input_shape)
@@ -349,7 +349,7 @@ def Predictions(audio, image):
     return audio, image, percentages
 
 # Predict on test data
-def Predict():
+def Predict(test_mode):
     IMG_SIZE = 48
 
     # Load test Json data
@@ -360,55 +360,63 @@ def Predict():
         X_a = np.array(data["mfcc"])
         X_i = np.array(data["image"])
         return X_a, X_i
-    
-    # CLassifier models
-    image_model = tf.keras.models.load_model('Models/imageClassifier.model')
-    audio_model = tf.keras.models.load_model('Models/audioClassifier.model')
+
+    # Classifier models
+    if test_mode == "-1":
+        image_model = tf.keras.models.load_model('Models/CNNimageClassifierV1.model')
+        audio_model = tf.keras.models.load_model('Models/CNNaudioClassifierV1.model')
+    else:
+        image_model = tf.keras.models.load_model('Models/imageClassifier.model')
+        audio_model = tf.keras.models.load_model('Models/audioClassifier.model')
 
     # Retrive data
     audio, image = load_test_data("JSON_files/TestData.json")
 
     # Fit audio data
     audio = audio[..., np.newaxis]
+    s = (-1, audio.shape[1], audio.shape[2], 1)
+    a = audio[0].reshape(s)
+
     # Predict audio
-    audio_predictions = audio_model.predict(audio)
+    audio_predictions = audio_model.predict(a)
 
     # Fit image data
     image = np.array(image).reshape(-1, IMG_SIZE, IMG_SIZE, 1)
     image = image.astype("float32")/255.0
+
     # Predict image
     image_predictions = image_model.predict(image)
 
     return Predictions(audio_predictions[0], image_predictions[0])
 
 # Functions needed to test the model
-def Test():
-    Photo_taker(tk.Tk(),'Take Photo', 1, True)
-    Audio_recorder(tk.Tk(), 'Audio Recorder', 1, True)
-    crop_faces('App_Data/Test/Raw/Image', 'App_Data/Test/Preprocessed/', False)
-    Process("App_Data/Test/Preprocessed/Audio/test.wav", "App_Data/Test/Preprocessed/Image/test.jpg", "JSON_files/TestData.json", True)
-    audio_result, image_result, combined_result = Predict()
+def Test(test_mode):
+    # Photo_taker(tk.Tk(),'Take Photo', 1, True)
+    # Audio_recorder(tk.Tk(), 'Audio Recorder', 1, True)
+    # crop_faces('App_Data/Test/Raw/Image', 'App_Data/Test/Preprocessed/', False)
+    # Process("App_Data/Test/Preprocessed/Audio/test.wav", "App_Data/Test/Preprocessed/Image/test.jpg", "JSON_files/TestData.json", True)
+    audio_result, image_result, combined_result = Predict(test_mode)
     again = Result(tk.Tk(), audio_result, image_result, combined_result)
     if str(again) == "y":
         Test()
 
 if __name__ == "__main__":
-    # sample_num = str(Start(tk.Tk(), 'Emotion Chatbot'))
-    # Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_num, int(sample_num), False)
-    # Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_num), False)
-    def augment_audio():
-        augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
-    t1 = threading.Thread(target=augment_audio)
-    t1.start()
-    augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
-    crop_faces('App_Data/Training/Augmented/Image', 'App_Data/Training/Preprocessed/', True)
-    crop_faces('App_Data/Training/Raw/Image', 'App_Data/Training/Preprocessed/', False)
-    Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
-    Train_models("JSON_files/TrainData.json", 48)
-    Test()
+    sample_test = str(Start(tk.Tk(), 'Emotion Chatbot'))
+    if not sample_test == "-1":
+        pass
+        # Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_test, int(sample_test), False)
+        # Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_test), False)
+        # def augment_audio():
+        #     augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
+        # t1 = threading.Thread(target=augment_audio)
+        # t1.start()
+        # augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
+        # crop_faces('App_Data/Training/Augmented/Image', 'App_Data/Training/Preprocessed/', True)
+        # crop_faces('App_Data/Training/Raw/Image', 'App_Data/Training/Preprocessed/', False)
+        # Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
+        # Train_models("JSON_files/TrainData.json", 48)
+    Test(sample_test)
     
-    #TODO add pre trained mode using larger dataset for testing with (add button on start tochoose test mode, use pre trained models on large dataset)
-    #TODO add loading when play pressed for chatbot (cover with text then paste new button onto once done)
     #TODO create junit tests
     #! try increasing augmentations
     #! test properly

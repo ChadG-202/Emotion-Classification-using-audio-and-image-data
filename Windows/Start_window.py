@@ -24,6 +24,8 @@ class Start():
         self.nextB.place(x=280, y=450)
         self.submitB = tk.Button(self.root, font="arial 20", text="Submit",bg="#FFFF00",fg="black",border=0,command=self.submit)
         self.submitB.place(x=640, y=600)
+        self.testB = tk.Button(self.root, font="arial 20", text="Test",bg="#ADD8E6",fg="black",border=0,command=self.test)
+        self.testB.place(x=640, y=600)
 
         # TextBox Creation
         self.inputtxt = tk.Text(self.root, height = 1, width = 20)
@@ -34,6 +36,11 @@ class Start():
     
     def __repr__(self):
         return str(self.samples) # Return sample number
+    
+    def test(self):
+        self.samples = -1
+        self.pos = 5
+        self.sentence()
 
     def next(self):
         self.pos += 1 # Increment screen state
@@ -62,6 +69,7 @@ class Start():
             text += "models providing a emotion prediction. The chatbot will then\n"
             text += "reply to your question with consideration to the emotion found by\n"
             text += "the CNN model.\n"
+            self.testB.place(x=280, y=525)
         elif self.pos == 1:
             text += "The photo application works by taking 2-10 pictures of youself\n"
             text += "in a happy/neutral/sad expression. You will be told on screen which\n"
@@ -71,6 +79,7 @@ class Start():
             text += "Try moving your face slightly each time to provide a range of angles.\n"
             text += "Make sure both eyes are visible on screen. If you make a\n"
             text += "mistake you can always re-take by clicking the 're-take' button.\n"
+            self.testB.place(x=640, y=600)
         elif self.pos == 2:
             text += "The recording application will get you to say 2-10 questions. These\n"
             text += "questions are the ones this chatbot knows. The CNN will use the change\n"
