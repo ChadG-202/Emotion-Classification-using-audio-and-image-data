@@ -1,32 +1,28 @@
 import threading
 from gtts import gTTS
 from PIL import ImageTk, Image
-from playsound import playsound
-from pydub import AudioSegment
-from pydub.playback import play
-
 import datetime
 import os
 import speech_recognition as sr
 import tkinter as tk
 
+from playsound import playsound
+from pydub import AudioSegment
+from pydub.playback import play
+from Windows.Structure_window import Structure
+
 '''
 Tkinter window to display confidence 
 results, and give access to chatbot reply.
 '''
-class Result():
-    def __init__(self, window, audio_results, image_results, combined_results, pos=0, again="n"):
-        # Window global var
-        self.root = window
-        self.root.geometry("640x600")
-        self.root.resizable(False, False)
-        self.root.title("Results")
-        self.root.configure(background="#4a4a4a")
+class Result(Structure):
+    def __init__(self, window, window_title, audio_results, image_results, combined_results):
+        Structure.__init__(self, window, window_title)
+
         self.audio_r = audio_results          # Array of confidence scores for the audio data
         self.image_r = image_results          # Array of confidence scores for the image data
         self.com_r = combined_results         # Array of confidence scores for the combined data
-        self.pos = pos                        # Current state
-        self.again = again                    # Repeat tests?
+        self.again = "n"                      # Repeat tests?
         self.question = ""                    # Asked question
 
         # Image

@@ -5,3 +5,4 @@ class Structure():
         self.root.geometry("640x600")
         self.root.resizable(False, False)
         self.root.configure(background="#4a4a4a")
+        self.pos = 0

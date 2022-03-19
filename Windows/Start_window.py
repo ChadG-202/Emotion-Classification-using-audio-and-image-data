@@ -1,19 +1,16 @@
 import tkinter as tk
 
+from Windows.Structure_window import Structure
+
 '''
 Tkinter window that explains how the program works.
 It also allows the user to input the number of samples
 to be taken.
 '''
-class Start():
-    def __init__(self, window, window_title, pos=0, samples=10):
-        # Window global var
-        self.root = window
-        self.root.title(window_title)
-        self.pos = pos # State of the display
-        self.root.geometry("640x600")
-        self.root.resizable(False, False)
-        self.root.configure(background="#4a4a4a")
+class Start(Structure):
+    def __init__(self, window, window_title, samples=10):
+        Structure.__init__(self, window, window_title)
+
         self.samples = samples # Number of pictures/recordings to be taken
 
         # Name
@@ -43,7 +40,7 @@ class Start():
         self.sentence()
 
     def next(self):
-        self.pos += 1 # Increment screen state
+        self.pos += 1
         self.sentence()
 
     def submit(self):

@@ -6,7 +6,6 @@ class Source():
         self.sample_num = samples_num
         self.test_set = test_set
         self.list_of_dir = ["Happy", "Neutral", "Sad"]
-        self.pos = 0
         self.taken = 0
 
     # Clear old data
@@ -19,6 +18,6 @@ class Source():
     # Take data again
     def retake(self):
         if self.taken > 0:
-            if self.taken%self.sample_num == 0: #!need to make work
+            if self.taken%self.sample_num == 0:
                 self.pos -=1
             self.taken -= 1

@@ -1,11 +1,3 @@
-from audiomentations import Compose, TimeStretch, Shift
-from keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
-from sklearn.model_selection import train_test_split
-from Windows.Audio_window import Audio_recorder
-from Windows.Photo_window import Photo_taker
-from Windows.Result_window import Result
-from Windows.Start_window import Start
-
 import cv2
 import dlib
 import json
@@ -18,6 +10,14 @@ import threading
 import tensorflow as tf
 import tkinter as tk
 import tensorflow.keras as keras
+
+from audiomentations import Compose, TimeStretch, Shift
+from keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
+from sklearn.model_selection import train_test_split
+from Windows.Audio_window import Audio_recorder
+from Windows.Photo_window import Photo_taker
+from Windows.Result_window import Result
+from Windows.Start_window import Start
 
 # Save cropped faces
 def save_face(img,name, bbox, i, width=48,height=48):
@@ -396,14 +396,14 @@ def Test(test_mode):
     crop_faces('App_Data/Test/Raw/Image', 'App_Data/Test/Preprocessed/', False)
     Process("App_Data/Test/Preprocessed/Audio/test.wav", "App_Data/Test/Preprocessed/Image/test.jpg", "JSON_files/TestData.json", True)
     audio_result, image_result, combined_result = Predict(test_mode)
-    again = Result(tk.Tk(), audio_result, image_result, combined_result)
+    again = Result(tk.Tk(), 'Results', audio_result, image_result, combined_result)
     if str(again) == "y":
         Test(test_mode)
 
 if __name__ == "__main__":
     sample_test = str(Start(tk.Tk(), 'Emotion Chatbot'))
     if not sample_test == "-1":
-        #Photo_taker(tk.Tk(),'Take Photo', "App_Data/Training/Raw/Image/", int(sample_test), False)
+        Photo_taker(tk.Tk(),'Take Photo', "App_Data/Training/Raw/Image/", int(sample_test), False)
         Audio_recorder(tk.Tk(), 'Audio Recorder', "App_Data/Training/Raw/Audio/", int(sample_test), False)
         def augment_audio():
             augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
