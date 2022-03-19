@@ -415,3 +415,6 @@ if __name__ == "__main__":
         Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
         Train_models("JSON_files/TrainData.json", 48)
     Test(sample_test)
+
+    #! make unittest
+    #! do a proper run through
