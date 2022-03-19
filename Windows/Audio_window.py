@@ -13,7 +13,7 @@ Tkinter window which records and
 saves wav audio files.
 '''
 class Audio_recorder:
-    def __init__(self, window, window_title, samples_num, test_set, pos=0, emotion='Happy'):
+    def __init__(self, window, window_title, path, samples_num, test_set, pos=0, emotion='Happy'):
         # Window global var
         self.root = window
         self.root.title(window_title)
@@ -31,7 +31,7 @@ class Audio_recorder:
         self.root.iconphoto(False, self.image_icon)
 
         # path
-        self.path = "App_Data/Training/Raw/Audio/"
+        self.path = path
         self.list_of_dir = ["Happy", "Neutral", "Sad"]
 
         #Logo
@@ -113,7 +113,7 @@ class Audio_recorder:
         def Save():
             save_path = ""
             if self.test_set:
-                save_path = "App_Data/Test/Preprocessed/Audio/test.wav"
+                save_path = self.path+"test.wav"
             else:
                 save_path  = self.path+type+"/"+pos+".wav"
 

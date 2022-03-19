@@ -11,7 +11,7 @@ Tkinter window which can be used to view,
 take and store pictures.
 '''
 class Photo_taker():
-    def __init__(self, window, window_title, samples_num, test_set, video_source=0, pos=0, taken=0, ok=False):
+    def __init__(self, window, window_title, path, samples_num, test_set, video_source=0, pos=0, taken=0, ok=False):
         # Window global var
         self.root = window
         self.root.title(window_title)
@@ -26,7 +26,7 @@ class Photo_taker():
         self.root.resizable(False, False)
 
         # path
-        self.path = "App_Data/Training/Raw/Image/"     # Path to store images
+        self.path = path     # Path to store images
         self.list_of_dir = ["Happy", "Neutral", "Sad"] # Directories avaliable
 
         # open video source (by default this will try to open the computer webcam)
@@ -107,7 +107,7 @@ class Photo_taker():
             # Test data
             if self.test_set:
                 if self.taken < 1:
-                    path = "App_Data/Test/Raw/Image/test.jpg"  
+                    path = self.path+"test.jpg"  
             # Training data
             else: 
                 if self.taken < self.sample_num:
