@@ -27,7 +27,7 @@ class Photo_taker(Structure, Source):
         # Label description
         self.my_string_var = tk.StringVar()
         if self.test_set:
-            self.my_string_var.set("Take a photo make sure your face is in the center")
+            self.my_string_var.set("Take a TEST photo: 1/1")
         else:
             self.my_string_var.set("Take a HAPPY photo: 1/"+str(self.sample_num))
         # Screen text
