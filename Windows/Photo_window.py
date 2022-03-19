@@ -23,6 +23,7 @@ class Photo_taker():
         self.ok=ok
         self.root.configure(background="#4a4a4a")
         self.root.geometry("640x600")
+        self.root.resizable(False, False)
 
         # path
         self.path = "App_Data/Training/Raw/Image/"     # Path to store images

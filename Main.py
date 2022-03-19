@@ -403,18 +403,18 @@ def Test(test_mode):
 if __name__ == "__main__":
     sample_test = str(Start(tk.Tk(), 'Emotion Chatbot'))
     if not sample_test == "-1":
-        Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_test, int(sample_test), False)
-        Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_test), False)
-        def augment_audio():
-            augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
-        t1 = threading.Thread(target=augment_audio)
-        t1.start()
-        augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
-        crop_faces('App_Data/Training/Augmented/Image', 'App_Data/Training/Preprocessed/', True)
-        crop_faces('App_Data/Training/Raw/Image', 'App_Data/Training/Preprocessed/', False)
-        Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
-        Train_models("JSON_files/TrainData.json", 48)
+        pass
+        # Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_test, int(sample_test), False)
+        # Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_test), False)
+        # def augment_audio():
+        #     augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
+        # t1 = threading.Thread(target=augment_audio)
+        # t1.start()
+        # augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
+        # crop_faces('App_Data/Training/Augmented/Image', 'App_Data/Training/Preprocessed/', True)
+        # crop_faces('App_Data/Training/Raw/Image', 'App_Data/Training/Preprocessed/', False)
+        # Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
+        # Train_models("JSON_files/TrainData.json", 48)
     Test(sample_test)
     
     #TODO create junit tests
-    #! try increasing augmentations
