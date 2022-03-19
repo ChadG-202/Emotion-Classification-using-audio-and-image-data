@@ -75,7 +75,7 @@ def augment_audio_data(path, aug_path):
             label = semantic_label + "/" + f
             sf.write(os.path.join(aug_path, label), signal, sr)
             # Save 10 aug
-            for count in range(0, 10):
+            for count in range(0, 20):
                 label = semantic_label + "/" + str(count) + "_" + f
                 augmented_signal = augment(signal, sr)
                 sf.write(os.path.join(aug_path, label), augmented_signal, sr)
@@ -108,7 +108,7 @@ def augment_image_data(path, aug_path):
                 
             f_s = f.split(".")
             
-            for x, val in zip(datagen.flow(X, batch_size=2, save_to_dir=os.path.join(aug_path, semantic_label), save_prefix=f_s[0], save_format=f_s[1]),range(9)):     
+            for x, val in zip(datagen.flow(X, batch_size=2, save_to_dir=os.path.join(aug_path, semantic_label), save_prefix=f_s[0], save_format=f_s[1]),range(19)):     
                 pass
 
 # Determine the smallest dataset
@@ -391,30 +391,29 @@ def Predict(test_mode):
 
 # Functions needed to test the model
 def Test(test_mode):
-    Photo_taker(tk.Tk(),'Take Photo', 1, True)
-    Audio_recorder(tk.Tk(), 'Audio Recorder', 1, True)
-    crop_faces('App_Data/Test/Raw/Image', 'App_Data/Test/Preprocessed/', False)
-    Process("App_Data/Test/Preprocessed/Audio/test.wav", "App_Data/Test/Preprocessed/Image/test.jpg", "JSON_files/TestData.json", True)
+    # Photo_taker(tk.Tk(),'Take Photo', 1, True)
+    # Audio_recorder(tk.Tk(), 'Audio Recorder', 1, True)
+    # crop_faces('App_Data/Test/Raw/Image', 'App_Data/Test/Preprocessed/', False)
+    # Process("App_Data/Test/Preprocessed/Audio/test.wav", "App_Data/Test/Preprocessed/Image/test.jpg", "JSON_files/TestData.json", True)
     audio_result, image_result, combined_result = Predict(test_mode)
     again = Result(tk.Tk(), audio_result, image_result, combined_result)
     if str(again) == "y":
-        Test()
+        Test(test_mode)
 
 if __name__ == "__main__":
     sample_test = str(Start(tk.Tk(), 'Emotion Chatbot'))
     if not sample_test == "-1":
-        pass
-        # Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_test, int(sample_test), False)
-        # Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_test), False)
-        # def augment_audio():
-        #     augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
-        # t1 = threading.Thread(target=augment_audio)
-        # t1.start()
-        # augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
-        # crop_faces('App_Data/Training/Augmented/Image', 'App_Data/Training/Preprocessed/', True)
-        # crop_faces('App_Data/Training/Raw/Image', 'App_Data/Training/Preprocessed/', False)
-        # Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
-        # Train_models("JSON_files/TrainData.json", 48)
+        Photo_taker(tk.Tk(),'Take Happy Photo 1/'+sample_test, int(sample_test), False)
+        Audio_recorder(tk.Tk(), 'Audio Recorder', int(sample_test), False)
+        def augment_audio():
+            augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
+        t1 = threading.Thread(target=augment_audio)
+        t1.start()
+        augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
+        crop_faces('App_Data/Training/Augmented/Image', 'App_Data/Training/Preprocessed/', True)
+        crop_faces('App_Data/Training/Raw/Image', 'App_Data/Training/Preprocessed/', False)
+        Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
+        Train_models("JSON_files/TrainData.json", 48)
     Test(sample_test)
     
     #TODO create junit tests
