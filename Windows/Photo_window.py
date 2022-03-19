@@ -6,28 +6,20 @@ import PIL.Image, PIL.ImageTk
 import threading
 import tkinter as tk
 
+from Windows.Source_window import Source
+from Windows.Structure_window import Structure
+
 '''
 Tkinter window which can be used to view,
 take and store pictures.
 '''
-class Photo_taker():
-    def __init__(self, window, window_title, path, samples_num, test_set, video_source=0, pos=0, taken=0, ok=False):
-        # Window global var
-        self.root = window
-        self.root.title(window_title)
-        self.sample_num = samples_num     # Number of samples to be taken
-        self.test_set = test_set          # Is this a test widnow?
-        self.video_source = video_source  
-        self.pos = pos                    # State of window
-        self.taken = taken                # Samples taken
-        self.ok=ok
-        self.root.configure(background="#4a4a4a")
-        self.root.geometry("640x600")
-        self.root.resizable(False, False)
+class Photo_taker(Structure, Source):
+    def __init__(self, window, window_title, path, samples_num, test_set, video_source=0):
+        Structure.__init__(self, window, window_title)
+        Source.__init__(self, path, samples_num, test_set)
 
-        # path
-        self.path = path     # Path to store images
-        self.list_of_dir = ["Happy", "Neutral", "Sad"] # Directories avaliable
+        self.video_source = video_source  
+        self.ok = False
 
         # open video source (by default this will try to open the computer webcam)
         self.vid = VideoCapture(self.video_source)
@@ -37,10 +29,10 @@ class Photo_taker():
         if self.test_set:
             self.my_string_var.set("Take a photo make sure your face is in the center")
         else:
-            self.my_string_var.set("Take a HAPPY photo, make sure your face is in the center")
+            self.my_string_var.set("Take a HAPPY photo: 1/"+str(self.sample_num))
         # Screen text
         self.photo_description=tk.Label(textvariable=self.my_string_var, font="arial 12 bold", background="#4a4a4a", fg="white")
-        self.photo_description2=tk.Label(text="of the screen and that both eyes can be seen.", font="arial 12 bold", background="#4a4a4a", fg="white")
+        self.photo_description2=tk.Label(text="Center face on screen and make sure both eyes are visible.", font="arial 12 bold", background="#4a4a4a", fg="white")
 
         # Create a canvas that can fit the above video source size
         self.canvas = tk.Canvas(self.root, width = self.vid.width, height = self.vid.height)
@@ -50,7 +42,7 @@ class Photo_taker():
         self.btn_snapshot=tk.Button(self.root, font="arial 20", text="Snapshot", bg="#C1E1C1", fg="black", border=0, command=self.snapshot)
 
         # Redo button
-        self.btn_retake=tk.Button(self.root, font="arial 20", text="Re-take", bg="#111111", fg="white", border=0, command=self.retake)
+        self.btn_retake=tk.Button(self.root, font="arial 20", text="Re-take", bg="#111111", fg="white", border=0, command=self.retakeB)
 
         # Clear data from path to make room for new data
         if not self.test_set:
@@ -62,20 +54,10 @@ class Photo_taker():
 
         self.root.mainloop()
     
-    # Clear old data
-    def clear(self, path):
-        for dir in self.list_of_dir:
-            for i, (dirpath, dirnames, filenames) in enumerate(os.walk(path+dir)):
-                for f in filenames:
-                    os.remove(os.path.join(dirpath, f))
-    
     # Take photo again
-    def retake(self):
-        if self.taken > 0:
-            if self.taken%self.sample_num == 0:
-                self.pos -=1
-            self.taken -= 1
-            self.update_title()
+    def retakeB(self):
+        self.retake()
+        self.update_text()
 
     # Take a photo and store in relevant folder
     def snapshot(self):
@@ -138,21 +120,16 @@ class Photo_taker():
                     if self.pos == 3:
                         self.root.destroy() # Finished
                 
-                self.update_title()
+                self.update_text()
 
     # Update title
-    def update_title(self):
-        title = 'Take Happy Photo '+str(self.taken+1)+'/'+str(self.sample_num)
-        text = "Take a HAPPY photo, make sure your face is in the center"
-
+    def update_text(self):
+        text = 'Take Happy Photo: '+str(self.taken+1)+'/'+str(self.sample_num)
         if self.pos == 1:
-            title = 'Take Neutral Photo '+str(self.taken+1-self.sample_num)+'/'+str(self.sample_num)
-            text = "Take NEUTRAL photo make sure face is in the center"
+            text = 'Take Neutral Photo: '+str(self.taken+1-self.sample_num)+'/'+str(self.sample_num)
         elif self.pos == 2:
-            title = 'Take Sad Photo '+str(self.taken+1-self.sample_num*2)+'/'+str(self.sample_num)
-            text = "Take SAD photo make sure face is in the center"
-        
-        self.root.title(title)
+            text = 'Take Sad Photo: '+str(self.taken+1-self.sample_num*2)+'/'+str(self.sample_num)
+
         self.my_string_var.set(text)
 
     # Update tkinter window
@@ -166,8 +143,8 @@ class Photo_taker():
         if ret:
             self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
             self.canvas.create_image(0, 0, image = self.photo, anchor = tk.NW)
-            self.photo_description.place(x=150, y=485)
-            self.photo_description2.place(x=165, y=505)
+            self.photo_description.place(x=225, y=485)
+            self.photo_description2.place(x=110, y=505)
             if self.test_set:
                 self.btn_retake.place(x=640, y=600)
                 self.btn_snapshot.place(x=265, y=540)

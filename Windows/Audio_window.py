@@ -1,6 +1,3 @@
-from pydub import AudioSegment
-from pydub.playback import play
-
 import os
 import pyaudio
 import threading
@@ -8,31 +5,23 @@ import time
 import tkinter as tk
 import wave
 
+from pydub import AudioSegment
+from pydub.playback import play
+from Windows.Source_window import Source
+from Windows.Structure_window import Structure
+
 '''
 Tkinter window which records and 
 saves wav audio files.
 '''
-class Audio_recorder:
-    def __init__(self, window, window_title, path, samples_num, test_set, pos=0, emotion='Happy'):
-        # Window global var
-        self.root = window
-        self.root.title(window_title)
-        self.test_set = test_set        # Is it a test window?
-        self.sample_num = samples_num   # Number of samples to be taken
-        self.pos = pos                  # Current state
-        self.emotion = emotion          # Current emotion
-        self.root.geometry("640x600")
-        self.root.resizable(False, False)
-        self.root.title("Voice Recorder")
-        self.root.configure(background="#4a4a4a")
+class Audio_recorder(Structure, Source):
+    def __init__(self, window, window_title, path, samples_num, test_set):
+        Structure.__init__(self, window, window_title)
+        Source.__init__(self, path, samples_num, test_set)
 
         #Icon
         self.image_icon=tk.PhotoImage(file="App_Images/rec-button.png")
         self.root.iconphoto(False, self.image_icon)
-
-        # path
-        self.path = path
-        self.list_of_dir = ["Happy", "Neutral", "Sad"]
 
         #Logo
         self.photo=tk.PhotoImage(file="App_Images/rec-button.png")
@@ -45,7 +34,7 @@ class Audio_recorder:
         #Button
         self.record = tk.Button(self.root, font="arial 20", text="Record",bg="#C1E1C1",fg="black",border=0,command=self.Record).pack(pady=20)
         if not self.test_set:
-            self.btn_retake=tk.Button(self.root, font="arial 20", text="Re-take", bg="#111111", fg="white", border=0, command=self.retake).pack(pady=10)
+            self.btn_retake=tk.Button(self.root, font="arial 20", text="Re-take", bg="#111111", fg="white", border=0, command=self.retakeB).pack(pady=10)
 
             # Initial clear
             self.clear(self.path)
@@ -53,24 +42,11 @@ class Audio_recorder:
         self.sentence()
 
         self.root.mainloop()
-
-    # Clear old data
-    def clear(self, path):
-        for dir in self.list_of_dir:
-            for i, (dirpath, dirnames, filenames) in enumerate(os.walk(path+dir)):
-                for f in filenames:
-                    os.remove(os.path.join(dirpath, f))
     
     # Retake recording
-    def retake(self):
-        if self.pos > 0:
-            if self.pos%self.sample_num == 0:
-                if self.emotion == self.list_of_dir[1]:
-                    self.emotion = self.list_of_dir[0]
-                elif self.emotion == self.list_of_dir[2]:
-                    self.emotion == self.list_of_dir[1]
-            self.pos -= 1
-            self.sentence()
+    def retakeB(self):
+        self.retake()
+        self.sentence()
 
     # Record 4 second sample
     def Recording(self, type, pos):
@@ -136,12 +112,12 @@ class Audio_recorder:
         t1 = threading.Thread(target=Save)
         t1.start()
 
-        self.pos += 1
+        self.taken += 1
         self.sentence()
 
     # Call recording
     def Record(self):
-        self.Recording(self.emotion, str(self.pos))
+        self.Recording(self.list_of_dir[self.pos], str(self.taken))
     
     # Window text
     def sentence(self):
@@ -151,11 +127,11 @@ class Audio_recorder:
         "'Who am i?'", "'What is there to watch on Netflix?'",
         "'Are unicorns real?'", "'How do you spell tree?'"]
 
-        tempPos = self.pos
+        tempTaken = self.taken
 
         # Test
         if self.test_set:
-            if self.pos < 1:
+            if self.taken < 1:
                 text = "Choose one question below to ask the bot.\n"
                 for i in range(0, 9, 2):
                     text += questions[i]+", "+questions[i+1]+"\n"
@@ -164,15 +140,15 @@ class Audio_recorder:
                 self.root.destroy()
         # train
         else:
-            if self.pos > self.sample_num-1 and self.pos < self.sample_num*2:
-                tempPos = self.pos - self.sample_num
-                self.emotion = self.list_of_dir[1]
-            elif self.pos > (self.sample_num*2)-1 and self.pos < self.sample_num*3:
-                tempPos = self.pos - self.sample_num*2
-                self.emotion = self.list_of_dir[2]
+            if self.taken > self.sample_num-1 and self.taken < self.sample_num*2:
+                tempTaken = self.taken - self.sample_num
+                self.pos = 1
+            elif self.taken > (self.sample_num*2)-1 and self.taken < self.sample_num*3:
+                tempTaken = self.taken - self.sample_num*2
+                self.pos = 2
 
-            if self.pos < self.sample_num*3:
-                ask = "Say the question:\n"+questions[tempPos]+"\nin a "+self.emotion+" expression:\n"+str(tempPos+1)+"/"+str(self.sample_num)
+            if self.taken < self.sample_num*3:
+                ask = "Say the question:\n"+questions[tempTaken]+"\nin a "+self.list_of_dir[self.pos]+" expression:\n"+str(tempTaken+1)+"/"+str(self.sample_num)
                 tk.Label(text=f"{ask}", font="arial 15",width=50,background="#4a4a4a",fg="white").place(x=45, y=415)
             else:
                 time.sleep(4.5)
