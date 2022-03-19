@@ -56,7 +56,7 @@ class Photo_taker(Structure, Source):
     
     # Take photo again
     def retakeB(self):
-        self.retake()
+        self.pos = self.retake(self.pos)
         self.update_text()
 
     # Take a photo and store in relevant folder
@@ -84,7 +84,7 @@ class Photo_taker(Structure, Source):
 
                 if len(faces) == 0 or len(faces) > 1:
                     print("No face found or too many faces")
-                    self.retake()
+                    self.retake(self.pos)
 
             # Test data
             if self.test_set:

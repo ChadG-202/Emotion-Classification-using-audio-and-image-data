@@ -45,7 +45,7 @@ class Audio_recorder(Structure, Source):
     
     # Retake recording
     def retakeB(self):
-        self.retake()
+        self.pos = self.retake(self.pos)
         self.sentence()
 
     # Record 4 second sample

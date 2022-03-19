@@ -30,7 +30,7 @@ def save_face(img,name, bbox, i, width=48,height=48):
         print(str(e) +"\n couldnt resize: "+ i)
 
 # Find cropped faces
-def crop_faces(old_path, new_path, clear):
+def crop_faces(old_path, new_path, clear): #! test data is generated
     detector = dlib.get_frontal_face_detector()
 
     if clear:
@@ -56,7 +56,7 @@ def crop_faces(old_path, new_path, clear):
                 print("No face found: "+ file)
 
 # Augment the audio data
-def augment_audio_data(path, aug_path):
+def augment_audio_data(path, aug_path): #! test data is generated
     augment = Compose([
         TimeStretch(min_rate=0.8, max_rate=1.25, p=0.5),
         Shift(min_fraction=-0.5, max_fraction=0.5, p=0.5)
@@ -81,7 +81,7 @@ def augment_audio_data(path, aug_path):
                 sf.write(os.path.join(aug_path, label), augmented_signal, sr)
 
 # Augment the image data
-def augment_image_data(path, aug_path):
+def augment_image_data(path, aug_path): #! test data is generated
     datagen = ImageDataGenerator(rescale=1./255,
         rotation_range=10,
         zoom_range=0.1,
@@ -122,7 +122,7 @@ def find_smallest_dataset(path):
     return smallest_size
 
 # Process audio and image data - store in data.json file
-def Process(audio_path, image_path, json_path, test, n_mfcc=13, n_fft=2048, hop_length=512, num_segments=1):
+def Process(audio_path, image_path, json_path, test, n_mfcc=13, n_fft=2048, hop_length=512, num_segments=1):  #! test JSON file is made
     SAMPLE_RATE = 22050
     DURATION = 4
     SAMPLES_PER_TRACK = SAMPLE_RATE * DURATION
