@@ -121,7 +121,7 @@ def find_smallest_dataset(path):
     smallest_size = min(data_set_sizes)
     return smallest_size
 
-# Process audio and image data - store in data.json file
+# Process audio and image data - store in json file
 def Process(audio_path, image_path, json_path, test, n_mfcc=13, n_fft=2048, hop_length=512, num_segments=1):  #! test JSON file is made
     SAMPLE_RATE = 22050
     DURATION = 4
@@ -315,7 +315,7 @@ def Train_models(DATA_PATH, IMG_SIZE):
 
         # audio_model.summary()
 
-        audio_history = audio_model.fit(X_audio_train, y_audio_train, batch_size=2, epochs=15, validation_data=(X_audio_validation, y_audio_validation), verbose=1)
+        audio_history = audio_model.fit(X_audio_train, y_audio_train, batch_size=2, epochs=15, validation_data=(X_audio_validation, y_audio_validation), verbose=0)
         
         audio_model.save("Models/audioClassifier.model")
 
@@ -337,7 +337,7 @@ def Train_models(DATA_PATH, IMG_SIZE):
 
     # image_model.summary()
 
-    image_history = image_model.fit(X_image_train, y_image_train, batch_size=2, epochs=15, validation_data=(X_image_validation, y_image_validation), verbose=1)
+    image_history = image_model.fit(X_image_train, y_image_train, batch_size=2, epochs=15, validation_data=(X_image_validation, y_image_validation), verbose=0)
 
     image_model.save("Models/imageClassifier.model")
 
@@ -389,7 +389,7 @@ def Predict(test_mode):
 
     return Predictions(audio_predictions[0], image_predictions[0])
 
-# Functions needed to test the model
+# Test model
 def Test(test_mode):
     Photo_taker(tk.Tk(),'Take Photo', "App_Data/Test/Raw/Image/", 1, True)
     Audio_recorder(tk.Tk(), 'Audio Recorder', "App_Data/Test/Preprocessed/Audio/", 1, True)
@@ -400,11 +400,13 @@ def Test(test_mode):
     if str(again) == "y":
         Test(test_mode)
 
+# Main
 if __name__ == "__main__":
     sample_test = str(Start(tk.Tk(), 'Emotion Chatbot'))
     if not sample_test == "-1":
         Photo_taker(tk.Tk(),'Take Photo', "App_Data/Training/Raw/Image/", int(sample_test), False)
         Audio_recorder(tk.Tk(), 'Audio Recorder', "App_Data/Training/Raw/Audio/", int(sample_test), False)
+        print("Processing...")
         def augment_audio():
             augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
         t1 = threading.Thread(target=augment_audio)
@@ -415,6 +417,3 @@ if __name__ == "__main__":
         Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
         Train_models("JSON_files/TrainData.json", 48)
     Test(sample_test)
-
-    #! make unittest
-    #! do a proper run through

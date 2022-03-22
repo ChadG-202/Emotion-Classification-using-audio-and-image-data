@@ -1,7 +1,6 @@
 import argparse
 import cv2
 import dlib
-import os
 import PIL.Image, PIL.ImageTk
 import threading
 import tkinter as tk
@@ -48,10 +47,8 @@ class Photo_taker(Structure, Source):
         if not self.test_set:
             self.clear(self.path)
 
-        # After it is called once, the update method will be automatically called every 10 milliseconds
         self.delay=10
         self.update()
-
         self.root.mainloop()
     
     # Take photo again

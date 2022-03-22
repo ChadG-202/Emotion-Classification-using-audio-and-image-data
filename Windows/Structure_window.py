@@ -1,3 +1,6 @@
+'''
+Defines how each window will be structured.
+'''
 class Structure():
     def __init__(self, window, window_title):
         self.root = window

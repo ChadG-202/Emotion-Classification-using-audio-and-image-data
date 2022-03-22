@@ -31,44 +31,47 @@ class Start(Structure):
         self.sentence()
         self.root.mainloop()
     
+    # Return sample number
     def __repr__(self):
-        return str(self.samples) # Return sample number
+        return str(self.samples)
     
+    # Use test model
     def test(self):
-        self.samples = -1
-        self.pos = 5
+        self.samples = -1 # set sample to -1 to tell program this is in test mode
+        self.pos = 5      # finish window by setting to pos 5
         self.sentence()
 
+    # Next page
     def next(self):
         self.pos += 1
         self.sentence()
 
+    # Submitting sample number
     def submit(self):
-        # Submitting sample number
-        try:
+        try: # validate for number
             self.samples = int(self.inputtxt.get(1.0, "end-1c"))
-            if (self.samples > 1 and self.samples < 11):
+            if (self.samples > 1 and self.samples < 11): # validate that its in range 2-10
                 self.next()
             else:
                 tk.Label(text="Make sure you enter a number between 2 and 10.", font="arial 15",width=58,background="#DC143C",fg="white").place(x=0, y=520)
         except:
             tk.Label(text="Make sure you enter a number", font="arial 15",width=58,background="#DC143C",fg="white").place(x=0, y=520)
-            
+
+    # displayed  
     def sentence(self):
-        # Screen text
         text = ""
         if self.pos == 0:
             text += "This application uses image and audio data to predict emotion.\n"
             text += "It does this by gathering samples from you, these samples are\n"
             text += "agumented to create a larger set of data. This data can be used to\n"
-            text += "train two deep learing CNN models. The program will ask you to take\n"
+            text += "train two deep learing CNN models. The program, will ask you to take\n"
             text += "one more photo and recording. This data will be passed through the\n"
             text += "models providing a emotion prediction. The chatbot will then\n"
             text += "reply to your question with consideration to the emotion found by\n"
             text += "the CNN model.\n"
             self.testB.place(x=280, y=525)
         elif self.pos == 1:
-            text += "The photo application works by taking 2-10 pictures of youself\n"
+            text += "The photo application works by taking 2-10 pictures\n"
             text += "in a happy/neutral/sad expression. You will be told on screen which\n"
             text += "emotion to show. Each time you click 'snapshot' a photo will be\n"
             text += "taken. Onces you have done 2-10 photos it will prompt you with \n"
@@ -110,6 +113,6 @@ class Start(Structure):
         else:
             self.root.destroy()
 
-        # Display text if in range of different states
+        # Display text if in range 0-4
         if self.pos < 5:
             tk.Label(text=f"{text}", font="arial 15",width=58,background="#4a4a4a",fg="white").place(x=0, y=150)

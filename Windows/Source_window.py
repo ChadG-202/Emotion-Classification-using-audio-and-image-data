@@ -1,5 +1,9 @@
 import os
 
+'''
+Defines some common functions 
+shared between the windows that source data.
+'''
 class Source():
     def __init__(self, path, samples_num, test_set):
         self.path = path

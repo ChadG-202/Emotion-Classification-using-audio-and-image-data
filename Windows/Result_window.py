@@ -102,14 +102,10 @@ class Result(Structure):
             result += "Neutral"
         elif sad > happy and sad > neutral:
             result += "Sad"
-        elif happy > neutral and happy == sad:
-            result += "Happy" #! Happy biast
-        elif happy > sad and happy == neutral:
-            result += "Happy" #! Happy biast
         elif neutral > happy and neutral == sad:
             result += "Neutral" #! Neutral biast
         else:
-            result += "Sad" #! Sad biast
+            result += "Happy" #! Happy biast
         return result
 
     # Chatbot reply

@@ -1,4 +1,3 @@
-import os
 import pyaudio
 import threading
 import time
