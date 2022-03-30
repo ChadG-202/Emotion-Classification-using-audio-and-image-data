@@ -29,4 +29,4 @@ PIL,
 datetime,
 gtts,
 speech_recognition,
-playsound,
+playsound
