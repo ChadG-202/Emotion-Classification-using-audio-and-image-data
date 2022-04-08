@@ -196,6 +196,8 @@ class Result(Structure):
         else:
             reply = "Unable to match your question. Try again."
         
+        tk.Label(text=reply, font="arial 12",width=70,background="#4a4a4a",fg="red").place(x=0, y=450)
+
         try:
             os.remove("Chatbot/bot_reply.mp3")
         except:
@@ -236,6 +238,7 @@ class Result(Structure):
         tk.Label(text="Turn sound on to hear reply!", font="arial 12",width=71,background="#4a4a4a",fg="#98FB98").place(x=0, y=280)
 
         tk.Label(text="Loading...", font="arial 20",width=40,background="#4a4a4a",fg="white").place(x=0, y=330)
+        tk.Label(text="Chatbot Reply:", font="arial 20",width=40,background="#4a4a4a",fg="red").place(x=0, y=400)
         
         tk.Button(self.root, font="arial 20", text="Again",bg="#C1E1C1",fg="black",border=0,command=self.test_again).place(x=280, y=530)
 
