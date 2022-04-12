@@ -132,8 +132,8 @@ class Result(Structure):
         elif question == "can you find me a route home":
             if emotion == "Happy":
                 reply = "Of course finding the best possible routes for you to get home."
-            elif emotion == "sad":
-                reply = "Working as quick as possible to find you routes home. If you are lost or in danger just ask me to call emergency serices."
+            elif emotion == "Sad":
+                reply = "Working as quick as possible to find you routes home. Do you need emergency services?"
             else:
                 reply = "Finding routes to home."
 
