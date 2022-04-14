@@ -267,26 +267,57 @@ def Train_models(DATA_PATH, IMG_SIZE):
         
         return X_train, X_validation, y_train, y_validation
     
-    # CNN model
-    def build_model(input_shape):
+    # CNN image model
+    def build_image_model(input_shape):
         model = keras.Sequential()
         
         model.add(keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=input_shape))
         model.add(keras.layers.Conv2D(32, (3, 3), activation='relu'))
         model.add(keras.layers.MaxPooling2D((3, 3), strides=(2, 2), padding='same'))                                
-        model.add(keras.layers.Dropout(0.2))  
+        model.add(keras.layers.Dropout(0.05))  
         
-        model.add(keras.layers.Conv2D(64, (3, 3), activation='relu')) 
+        model.add(keras.layers.Conv2D(16, (3, 3), activation='relu')) 
         model.add(keras.layers.Conv2D(64, (3, 3), activation='relu'))   
+        model.add(keras.layers.MaxPooling2D((3, 3), strides=(2, 2), padding='same'))                                
+        model.add(keras.layers.Dropout(0.35))
+        
+        model.add(keras.layers.Flatten())
+
+        model.add(keras.layers.Dense(480, activation='relu'))
+        model.add(keras.layers.Dropout(0.15))
+        
+        model.add(keras.layers.Dense(3, activation='softmax'))
+        
+        return model
+    
+    # CNN audio model
+    def build_audio_model(input_shape):
+        model = keras.Sequential()
+        
+        model.add(keras.layers.Conv2D(16, (3, 3), activation='relu', input_shape=input_shape))
+        model.add(keras.layers.Conv2D(16, (3, 3), activation='relu'))
         model.add(keras.layers.MaxPooling2D((3, 3), strides=(2, 2), padding='same'))                                
         model.add(keras.layers.Dropout(0.1))
         
+        model.add(keras.layers.Conv2D(16, (3, 3), activation='relu')) 
+        model.add(keras.layers.Conv2D(64, (3, 3), activation='relu'))   
+        model.add(keras.layers.MaxPooling2D((3, 3), strides=(2, 2), padding='same'))                                
+        model.add(keras.layers.Dropout(0.4))
+        
         model.add(keras.layers.Flatten())
         
-        model.add(keras.layers.Dense(184, activation='relu'))
-        model.add(keras.layers.Dropout(0.25))
+        model.add(keras.layers.Dense(192, activation='relu'))
+        model.add(keras.layers.Dropout(0.05))
+        model.add(keras.layers.Dense(128, activation='relu'))
+        model.add(keras.layers.Dropout(0.05))
         model.add(keras.layers.Dense(256, activation='relu'))
-        model.add(keras.layers.Dropout(0.14))
+        model.add(keras.layers.Dropout(0.3))
+        model.add(keras.layers.Dense(256, activation='relu'))
+        model.add(keras.layers.Dropout(0.25))
+        model.add(keras.layers.Dense(160, activation='relu'))
+        model.add(keras.layers.Dropout(0.05))
+        model.add(keras.layers.Dense(480, activation='relu'))
+        model.add(keras.layers.Dropout(0.2))
         
         model.add(keras.layers.Dense(3, activation='softmax'))
         
@@ -305,7 +336,7 @@ def Train_models(DATA_PATH, IMG_SIZE):
     def train_audio():
         # Audio train
         audio_input_shape = (X_audio_train.shape[1], X_audio_train.shape[2], X_audio_train.shape[3])
-        audio_model = build_model(audio_input_shape)
+        audio_model = build_audio_model(audio_input_shape)
 
         audio_optimizer = keras.optimizers.Adam(learning_rate=0.0001)
 
@@ -327,7 +358,7 @@ def Train_models(DATA_PATH, IMG_SIZE):
     X_image_validation = X_image_validation.astype("float32")/255.0
 
     image_input_shape = (X_image_train.shape[1:])
-    image_model = build_model(image_input_shape)
+    image_model = build_image_model(image_input_shape)
 
     image_optimizer = keras.optimizers.Adam(learning_rate=0.0001)
 
