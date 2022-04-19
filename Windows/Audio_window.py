@@ -30,6 +30,7 @@ class Audio_recorder(Structure, Source):
         #Name
         tk.Label(text="Voice Recorder", font="arial 30 bold", background="#4a4a4a", fg="white").pack()
 
+        self.done_recording = True
         #Button
         self.record = tk.Button(self.root, font="arial 20", text="Record",bg="#C1E1C1",fg="black",border=0,command=self.Record).pack(pady=20)
         if not self.test_set:
@@ -49,6 +50,7 @@ class Audio_recorder(Structure, Source):
 
     # Record 4 second sample
     def Recording(self, type, pos):
+        self.done_recording = False
         p = pyaudio.PyAudio()
 
         # Recording values
@@ -83,6 +85,7 @@ class Audio_recorder(Structure, Source):
         stream.stop_stream()
         stream.close()
         p.terminate()
+        self.done_recording = True
         
         # Save audio
         def Save():
@@ -116,7 +119,8 @@ class Audio_recorder(Structure, Source):
 
     # Call recording
     def Record(self):
-        self.Recording(self.list_of_dir[self.pos], str(self.taken))
+        if self.done_recording:
+            self.Recording(self.list_of_dir[self.pos], str(self.taken))
     
     # Window text
     def sentence(self):

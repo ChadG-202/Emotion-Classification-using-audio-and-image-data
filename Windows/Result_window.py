@@ -24,6 +24,7 @@ class Result(Structure):
         self.com_r = combined_results         # Array of confidence scores for the combined data
         self.again = "n"                      # Repeat tests?
         self.question = ""                    # Asked question
+        self.already_playing = True           # Answer audio
 
         # Image
         self.canv = tk.Canvas(master=self.root)
@@ -82,9 +83,12 @@ class Result(Structure):
     
     # Play audio
     def play_sample(self):
+        sample = AudioSegment.from_wav("App_Data/Test/Preprocessed/Audio/test.wav")
         def playing():
-            sample = AudioSegment.from_wav("App_Data/Test/Preprocessed/Audio/test.wav")
-            play(sample)
+            if self.already_playing:
+                self.already_playing = False
+                play(sample)
+                self.already_playing = True
         t1 = threading.Thread(target=playing)
         t1.start()
 
@@ -208,11 +212,14 @@ class Result(Structure):
         bot_reply.save("Chatbot/bot_reply.mp3")
         # Play speech
         tk.Button(self.root, font="arial 20", text="Play Again",bg="#DC143C",fg="white",border=0,command=self.play_again).place(x=255, y=330)
-        playsound("Chatbot/bot_reply.mp3")
+        self.play_again()
 
     def play_again(self):
         def play():
-            playsound("Chatbot/bot_reply.mp3")
+            if self.already_playing:
+                self.already_playing = False
+                playsound("Chatbot/bot_reply.mp3")
+                self.already_playing = True
         t1 = threading.Thread(target=play)
         t1.start()
     

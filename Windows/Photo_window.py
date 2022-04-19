@@ -43,6 +43,9 @@ class Photo_taker(Structure, Source):
         # Redo button
         self.btn_retake=tk.Button(self.root, font="arial 20", text="Re-take", bg="#111111", fg="white", border=0, command=self.retakeB)
 
+        # Validation
+        self.val_l=tk.Label(text="Make sure ONE face is visable", font="arial 15",width=58,background="#DC143C",fg="white")
+
         # Clear data from path to make room for new data
         if not self.test_set:
             self.clear(self.path)
@@ -80,8 +83,10 @@ class Photo_taker(Structure, Source):
                 faces = detector(gray)
 
                 if len(faces) == 0 or len(faces) > 1:
-                    print("No face found or too many faces")
+                    self.val_l.place(x=0, y=450)
                     self.retake(self.pos)
+                else:
+                    self.val_l.place(x=640, y=600)
 
             # Test data
             if self.test_set:
@@ -99,15 +104,13 @@ class Photo_taker(Structure, Source):
                     path = self.path+self.list_of_dir[2]+"/"+str(self.taken-self.sample_num*2)+".jpg"
                     sample_total = self.sample_num*3
 
-            t1 = threading.Thread(target=save_image)
-            t2 = threading.Thread(target=check_face)
-            t1.start()
-            t2.start()
-            t1.join()
-            t2.join()
-
             self.taken +=1
 
+            t1 = threading.Thread(target=save_image)
+            t1.start()
+            t1.join()
+
+            check_face()
             if self.test_set:
                 if self.taken > 0:
                     self.root.destroy()
