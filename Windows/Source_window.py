@@ -13,14 +13,14 @@ class Source():
         self.taken = 0
 
     # Clear old data
-    def clear(self, path): #! test it clears data
+    def clear(self, path): 
         for dir in self.list_of_dir:
             for i, (dirpath, dirnames, filenames) in enumerate(os.walk(path+dir)):
                 for f in filenames:
                     os.remove(os.path.join(dirpath, f))
 
     # Take data again
-    def retake(self, pos): #! test
+    def retake(self, pos): 
         if self.taken > 0:
             if self.taken%self.sample_num == 0:
                 pos -=1

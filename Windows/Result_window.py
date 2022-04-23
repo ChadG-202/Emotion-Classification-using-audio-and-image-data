@@ -107,9 +107,9 @@ class Result(Structure):
         elif sad > happy and sad > neutral:
             result += "Sad"
         elif neutral > happy and neutral == sad:
-            result += "Neutral" #! Neutral biast
+            result += "Neutral" 
         else:
-            result += "Happy" #! Happy biast
+            result += "Happy" 
         return result
 
     # Chatbot reply
@@ -119,7 +119,7 @@ class Result(Structure):
         reply = ""
         if question == "can you help me":
             if emotion == "Happy":
-                reply = "Yes, i'm always in the mood to help you"
+                reply = "Yes, I'm always in the mood to help you."
             elif emotion == "Sad":
                 reply = "Are you alright, what do you need?"
             else:
@@ -127,7 +127,7 @@ class Result(Structure):
 
         elif question == "what is the weather today":
             if emotion == "Happy":
-                reply = "The weather is like your mood sunny with a high of 12 degrees"
+                reply = "The weather is like your mood sunny with a high of 12 degrees."
             elif emotion == "Sad":
                 reply = "Hopefully your mood will be lifted as its sunny todays with a high of 12 degrees."
             else:
@@ -176,11 +176,11 @@ class Result(Structure):
 
         elif question == "who am i":
             if emotion == "Happy":
-                reply = "You are warm, pleasant human being"
+                reply = "You are warm, pleasant human being."
             elif emotion == "Sad":
-                reply = "Don't be upset, you are an amazing human being"
+                reply = "Don't be upset, you are an amazing human being."
             else:
-                reply = "you are a human being"
+                reply = "you are a human being."
                 
         elif question == "are unicorns real":
             if emotion == "Happy":

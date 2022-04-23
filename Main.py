@@ -30,7 +30,7 @@ def save_face(img,name, bbox, i, width=48,height=48):
         print(str(e) +"\n couldnt resize: "+ i)
 
 # Find cropped faces
-def crop_faces(old_path, new_path, clear): #! test data is generated
+def crop_faces(old_path, new_path, clear):
     detector = dlib.get_frontal_face_detector()
 
     if clear:
@@ -56,7 +56,7 @@ def crop_faces(old_path, new_path, clear): #! test data is generated
                 print("No face found: "+ file)
 
 # Augment the audio data
-def augment_audio_data(path, aug_path): #! test data is generated
+def augment_audio_data(path, aug_path): 
     augment = Compose([
         TimeStretch(min_rate=0.8, max_rate=1.25, p=0.5),
         Shift(min_fraction=-0.5, max_fraction=0.5, p=0.5)
@@ -81,7 +81,7 @@ def augment_audio_data(path, aug_path): #! test data is generated
                 sf.write(os.path.join(aug_path, label), augmented_signal, sr)
 
 # Augment the image data
-def augment_image_data(path, aug_path): #! test data is generated
+def augment_image_data(path, aug_path): 
     datagen = ImageDataGenerator(rescale=1./255,
         rotation_range=10,
         zoom_range=0.1,
@@ -434,17 +434,17 @@ def Test(test_mode):
 # Main
 if __name__ == "__main__":
     sample_test = str(Start(tk.Tk(), 'Emotion Chatbot'))
-    # if not sample_test == "-1":
-    #     Photo_taker(tk.Tk(),'Take Photo', "App_Data/Training/Raw/Image/", int(sample_test), False)
-    #     Audio_recorder(tk.Tk(), 'Audio Recorder', "App_Data/Training/Raw/Audio/", int(sample_test), False)
-    #     print("Processing...")
-    #     def augment_audio():
-    #         augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
-    #     t1 = threading.Thread(target=augment_audio)
-    #     t1.start()
-    #     augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
-    #     crop_faces('App_Data/Training/Augmented/Image', 'App_Data/Training/Preprocessed/', True)
-    #     crop_faces('App_Data/Training/Raw/Image', 'App_Data/Training/Preprocessed/', False)
-    #     Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
-    #     Train_models("JSON_files/TrainData.json", 48)
+    if not sample_test == "-1":
+        Photo_taker(tk.Tk(),'Take Photo', "App_Data/Training/Raw/Image/", int(sample_test), False)
+        Audio_recorder(tk.Tk(), 'Audio Recorder', "App_Data/Training/Raw/Audio/", int(sample_test), False)
+        print("Processing...")
+        def augment_audio():
+            augment_audio_data("App_Data/Training/Raw/Audio", "App_Data/Training/Preprocessed/")
+        t1 = threading.Thread(target=augment_audio)
+        t1.start()
+        augment_image_data("App_Data/Training/Raw/Image", "App_Data/Training/Augmented/")
+        crop_faces('App_Data/Training/Augmented/Image', 'App_Data/Training/Preprocessed/', True)
+        crop_faces('App_Data/Training/Raw/Image', 'App_Data/Training/Preprocessed/', False)
+        Process("App_Data/Training/Preprocessed/Audio", "App_Data/Training/Preprocessed/Image", "JSON_files/TrainData.json", False)
+        Train_models("JSON_files/TrainData.json", 48)
     Test(sample_test)
