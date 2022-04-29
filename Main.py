@@ -19,6 +19,12 @@ from Windows.Photo_window import Photo_taker
 from Windows.Result_window import Result
 from Windows.Start_window import Start
 
+# Clear directories
+def clear_dir(path, type):
+    for i, (dirpath, dirnames, filenames) in enumerate(os.walk(path+type+"/")):
+        for f in filenames:
+            os.remove(os.path.join(dirpath, f))
+
 # Save cropped faces
 def save_face(img,name, bbox, i, width=48,height=48):
     x, y, w, h = bbox
@@ -34,9 +40,7 @@ def crop_faces(old_path, new_path, clear):
     detector = dlib.get_frontal_face_detector()
 
     if clear:
-        for i, (dirpath, dirnames, filenames) in enumerate(os.walk(new_path+"Image/")):
-            for f in filenames:
-                os.remove(os.path.join(dirpath, f))
+        clear_dir(new_path, "Image")
 
     for i, (root, dirs, files) in enumerate(os.walk(old_path)):
         for file in files:
@@ -62,9 +66,7 @@ def augment_audio_data(path, aug_path):
         Shift(min_fraction=-0.5, max_fraction=0.5, p=0.5)
     ])
 
-    for i, (dirpath, dirnames, filenames) in enumerate(os.walk(aug_path+"Audio/")):
-        for f in filenames:
-            os.remove(os.path.join(dirpath, f))
+    clear_dir(aug_path, "Audio")
 
     for i, (dirpath, dirnames, filenames) in enumerate(os.walk(path)):
         for f in filenames:
@@ -92,9 +94,7 @@ def augment_image_data(path, aug_path):
         fill_mode="nearest"
     )
 
-    for i, (dirpath, dirnames, filenames) in enumerate(os.walk(aug_path+"Image/")):
-        for f in filenames:
-            os.remove(os.path.join(dirpath, f))
+    clear_dir(aug_path, "Image")
     
     for i, (dirpath, dirnames, filenames) in enumerate(os.walk(path)):
         for f in filenames:

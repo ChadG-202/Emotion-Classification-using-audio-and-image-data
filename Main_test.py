@@ -64,9 +64,7 @@ class TestMainMethode(unittest.TestCase):
 
     # Test JSON file is created
     def test_Process(self):
-        for i, (dirpath, dirnames, filenames) in enumerate(os.walk("Test_JSON")):
-            for f in filenames:
-                os.remove(os.path.join(dirpath, f))
+        os.remove("Test_JSON/test.json")
         Process("Testing_App_Data/Training/Preprocessed/Audio", "Testing_App_Data/Training/Preprocessed/Image", "Test_JSON/test.json", False)
         file_generated = sum(len(files) for _, _, files in os.walk("Test_JSON"))
         self.assertEqual(file_generated, 1, "File hasnt been made")
