@@ -137,7 +137,7 @@ class Result(Structure):
             if emotion == "Happy":
                 reply = "Of course finding the best possible routes for you to get home."
             elif emotion == "Sad":
-                reply = "Working as quick as possible to find you routes home. Do you need emergency services?"
+                reply = "Working on finding you routes home. Do you require further assistance?"
             else:
                 reply = "Finding routes to home."
 
@@ -147,7 +147,7 @@ class Result(Structure):
             elif emotion == "Sad":
                 reply = "I suggest the fault in our stars. Would you like me to play it?"
             else:
-                reply = "There is a range of movies from the hustle, king kong and justice league. Would you like me to open the app so you can decide?"
+                reply = "There is a range of movies from the hustle, king kong and justice league."
 
         elif question == "what time is it":
             currentDT = datetime.datetime.now()
