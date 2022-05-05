@@ -90,14 +90,14 @@ class Start(Structure):
             text += "or not in time, you can press the 're-take' button. After each\n"
             text += "sample is taken, the recording will be played back for you to check.\n"
         elif self.pos == 3:
-            text += "The application will then preprocess and process the data, before\n"
+            text += "The data will then be preprocessed and processed, before\n"
             text += "training. You will be promoted to take one more picture and one more\n"
             text += "recording in a chosen emotion. This data will be predicted upon\n"
             text += "before the results window shows the emotion it has predicted and\n"
             text += "what percentage of confidence it has for the image, audio and combined\n"
             text += "data. Pressing the 'Chatbot reply' button will allow you to\n"
-            text += "play the reply the chatbot has concluded best fits the situation, it\n"
-            text += "should be directly responsive to your emotion and question.\n"
+            text += "play the reply the chatbot has found to be most fitting the situation,\n"
+            text += "it should be related to your emotion and question.\n"
         elif self.pos == 4:
             text += "If you have trained the models, you can then continuously ask\n"
             text += "the chatbot new questions in different emotions by clicking the 'ask\n"
