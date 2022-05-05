@@ -17,6 +17,8 @@ class Audio_recorder(Structure, Source):
     def __init__(self, window, window_title, path, samples_num, test_set):
         Structure.__init__(self, window, window_title)
         Source.__init__(self, path, samples_num, test_set)
+        
+        self.done_recording = True
 
         #Icon
         self.image_icon=tk.PhotoImage(file="App_Images/rec-button.png")
@@ -30,7 +32,6 @@ class Audio_recorder(Structure, Source):
         #Name
         tk.Label(text="Voice Recorder", font="arial 30 bold", background="#4a4a4a", fg="white").pack()
 
-        self.done_recording = True
         #Button
         self.record = tk.Button(self.root, font="arial 20", text="Record",bg="#C1E1C1",fg="black",border=0,command=self.Record).pack(pady=20)
         if not self.test_set:
